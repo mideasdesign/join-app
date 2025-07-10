@@ -101,6 +101,7 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.env
 
 # Chutzpah Test files
 _Chutzpah*
@@ -404,3 +405,8 @@ FodyWeavers.xsd
 
 # JetBrains Rider
 *.sln.iml
+
+# Firebase
+.firebase
+*-debug.log
+.runtimeconfig.json
