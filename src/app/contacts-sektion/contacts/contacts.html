@@ -11,12 +11,15 @@
     <div class="group-header">{{ letter }}</div>
 
 @for ( contact of groupedContacts[letter]; track contact.id; let i = $index) {
-      <div class="contact-item" (click)="selectedContacts(letter, i)">
-        <div class="info">
-        <div class="name">{{ contact.name }}</div>
-        <div class="email">{{ contact.email }}</div>
-        </div>
-      </div>
+<div class="contact-item" (click)="selectedContacts(letter, i)">
+  <div class="circle" [style.backgroundColor]="getColor(contact.name)">
+    {{ getInitials(contact.name) }}
+  </div>
+  <div class="info">
+    <div class="name">{{ contact.name }}</div>
+    <div class="email">{{ contact.email }}</div>
+  </div>
+</div>
     }
   }
 </div>
@@ -51,7 +54,9 @@
   @if (selectedContactsIndex !== null) {
     <div class="contacts-detail">
       <div class="circle-initial">
-        <div class="circle-user"></div> 
+        <div class="circle-user" [style.backgroundColor]="getColor(selectedContact.name)">
+              {{ getInitials(selectedContact.name) }}
+        </div> 
       </div>
         <div class="alignment">
         <h2>{{ selectedContact.name }}</h2>

@@ -90,4 +90,20 @@ export class Contacts implements OnInit {
     get groupedKeys(): string[] {
     return Object.keys(this.groupedContacts).sort();
   }
+  getInitials(name: string): string {
+  if (!name) return '';
+  const parts = name.trim().split(' ');
+  const first = parts[0]?.charAt(0).toUpperCase() || '';
+  const last = parts[1]?.charAt(0).toUpperCase() || '';
+  return first + last;
+}
+
+getColor(name: string): string {
+  const colors = ['#FF8A00', '#6E00FF', '#009688', '#3F51B5', '#FF4081'];
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) {
+    hash = name.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+}
 }
