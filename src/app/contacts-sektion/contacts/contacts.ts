@@ -25,16 +25,15 @@ export class Contacts implements OnInit {
       name:'',
       email:'',
     };
-    selectedContact = {
-      name:'',
-      email:''
+    selectedContact: ContactsInterface = {
+      id: '',
+      name: '',
+      email: ''
     }
-    editContacts(letter: string, index: number) {
-      const contact = this.groupedContacts[letter][index];
-      if (!contact) return;
+    openEditContact(contact: ContactsInterface): void {
       this.isEdited = true;
-      this.selectedContactsIndex = index;
       this.contactsId = contact.id;
+      this.selectedContact = contact;
       this.editedContacts = {
         name: contact.name,
         email: contact.email
@@ -47,21 +46,23 @@ export class Contacts implements OnInit {
       this.selectedContactsIndex = index;
       this.contactsId = contact.id;
       this.selectedContact = {
+        id: contact.id,
         name: contact.name,
         email: contact.email
       };
     }
     saveEdit(){
-      console.log(this.contactsId, this.editedContacts);
+      console.log('SPEICHERN:', this.contactsId, this.editedContacts);
       if (this.contactsId) {
         this.firebase.editContactsToDatabase(this.contactsId, this.editedContacts);
       }
       this.cancelEdit();
     }
-    cancelEdit(){
+    cancelEdit(): void {
       this.isEdited = false;
       this.selectedContactsIndex = null;
       this.contactsId = '';
+      this.editedContacts = { name: '', email: '' };
     }
     constructor(private contactService: Firebase){
       this.firebase;
@@ -87,6 +88,6 @@ export class Contacts implements OnInit {
     }
 
     get groupedKeys(): string[] {
-      return Object.keys(this.groupedContacts).sort();
-    }
+    return Object.keys(this.groupedContacts).sort();
+  }
 }

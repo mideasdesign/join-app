@@ -8,26 +8,23 @@ import { ContactsInterface } from '../../interfaces/contacts-interface';
 @Injectable({
   providedIn: 'root',
 })
+
 export class Firebase implements OnDestroy {
   private firestore = inject(Firestore);
   private unsubscribe: Unsubscribe = () => {};
  ContactsList: ContactsInterface[] = [];
-
  
   constructor() {
     try {
       const contactsRef = query(collection(this.firestore, 'contacts'), orderBy('name'));
-      
       this.unsubscribe = onSnapshot(
         contactsRef,
         (snapshot) => {
           console.log('Snapshot received, number of documents:', snapshot.size);
-
           this.ContactsList = [];
           snapshot.forEach((doc: QueryDocumentSnapshot<DocumentData>) => {
             const data = doc.data();
             console.log('Document ID:', doc.id, 'Data:', data);
-
             this.ContactsList.push({
                 id: doc.id,
                 name: data['name'],
@@ -53,19 +50,17 @@ export class Firebase implements OnDestroy {
   async addContactsToDatabase(contacts:ContactsInterface){
     await addDoc(collection(this.firestore, 'contacts'), contacts)
   }
-    async editContactsToDatabase(id: string, data: ContactsInterface){
+    async editContactsToDatabase(id: string, editedContacts: ContactsInterface){
     await updateDoc(doc(this.firestore, 'contacts', id),
     {
-        name: data.name,
-        email: data.email,
-
+        name: editedContacts.name,
+        email: editedContacts.email,
     });
   }
 
   async deleteContactsFromDatabase(id: string){
     await deleteDoc(doc(this.firestore, 'contacts', id) )
   };
-
   
 setContactsObject(id: string, obj: ContactsInterface):ContactsInterface{
   return{
