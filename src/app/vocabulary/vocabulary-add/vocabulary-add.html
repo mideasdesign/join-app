@@ -1,0 +1,8 @@
+<section>
+    <h2>Add Vocabulary</h2>
+    <form (ngSubmit)="submitVocabulary()">
+        <input name="name" [(ngModel)]="contacts.name" placeholder="English" required>
+        <input name="email" [(ngModel)]="contacts.email" placeholder="German" required>
+        <button type="submit" [disabled]="!contacts.name || !contacts.email">Send</button>
+    </form>
+</section>

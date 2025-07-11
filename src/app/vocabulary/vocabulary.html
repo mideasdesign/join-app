@@ -1,0 +1,31 @@
+<section class="vocabulary-container">
+  <h2>Contacts List</h2>
+  
+  @if (firebase.ContactsList.length > 0) {
+    <div class="vocabulary-list">
+      @for (item of firebase.ContactsList; track item.id; let i = $index) {
+        <div class="vocabulary-item">
+          <span class="email">{{ item.name }}</span>
+          <span class="separator">-</span>
+          <span class="name">{{ item.email }}</span>
+         <button (click)="editContacts(i)" class="edit-btn">
+            Edit
+          </button>
+        </div>
+      }
+    </div>
+    <div>
+      <app-vocabulary-add></app-vocabulary-add>
+    </div>
+    @if(isEdited && selectedContactsIndex !== null){
+      <form (ngSubmit)="saveEdit()">
+        <input type="text" [(ngModel)]="editedContacts.name" name="name">
+        <input type="text" [(ngModel)]="editedContacts.email" name="email">
+        <button type="submit" [disabled]="!editedContacts.name || !editedContacts.email">save</button>
+        <button type="button" (click)="cancelEdit()">Cancel</button>
+      </form>
+    }
+  } @else {
+    <p class="no-items">No vocabulary items found. Add some to get started!</p>
+  }
+</section>

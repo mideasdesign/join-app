@@ -1,0 +1,65 @@
+ <section class="section-overlay" [ngClass]="mobileClass">
+            <div class="card-wrapper" [ngClass]="mobileClass">
+                <div class="close-btn" (click)="onClose()">
+                    <span class="close-sign">X</span>
+                </div>
+                <div class="left-container" [ngClass]="mobileClass">
+                    <div class="left-content">
+                        <div class="logo-container">
+                            <img class="logo-White" [ngClass]="mobileClass" src="/icons/join-logo-white.svg" alt="logo" />
+                         </div>
+                        <div class="mobil-view" [ngClass]="mobileClass">
+                        <h2>Edit contact</h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="add-content-right" [ngClass]="mobileClass">
+                    <div class="right-content">
+                        <div class="contact-form" [ngClass]="mobileClass">
+                            <div class="contact-avatar" [ngClass]="mobileClass">
+                                <img src="/icons-white/person.svg" alt="person" />
+                            </div>
+                            <form [formGroup]="contactForm" (ngSubmit)="onSubmit()">
+                                <div class="input-group">
+                                    <input
+                                        type="text"
+                                        placeholder="Name"
+                                        formControlName="name"
+                                        [ngClass]="{'valid-field': isFieldValid('name'), 'invalid-field': isFieldInvalid('name')}" />
+                                    <img src="/icons/person.svg" alt="person" />
+                                    <div *ngIf="isFieldInvalid('name')" class="validation-message">
+                                        {{ getValidationMessage('name') }}
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <input
+                                        type="email"
+                                        placeholder="Email"
+                                        formControlName="email"
+                                        [ngClass]="{'valid-field': isFieldValid('email'), 'invalid-field': isFieldInvalid('email')}" />
+                                    <img src="/icons/mail.svg" alt="mail" />
+                                    <div *ngIf="isFieldInvalid('email')" class="validation-message">
+                                        {{ getValidationMessage('email') }}
+                                    </div>
+                                </div>
+                                <div class="input-group">
+                                    <input
+                                        type="tel"
+                                        placeholder="Phone"
+                                        formControlName="phone"
+                                        [ngClass]="{'valid-field': isFieldValid('phone'), 'invalid-field': isFieldInvalid('phone')}" />
+                                    <img src="/icons/call.svg" alt="phone" />
+                                    <div *ngIf="isFieldInvalid('phone')" class="validation-message">
+                                        {{ getValidationMessage('phone') }}
+                                    </div>
+                                </div>
+                                <div class="button-group" [ngClass]="mobileClass">
+                                    <button type="button" class="cancel-btn" [ngClass]="mobileClass" (click)="onCancel()">Cancel</button>
+                                    <button type="submit" class="create-btn" [disabled]="contactForm.invalid" (submit)="onSubmit()">Save</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
