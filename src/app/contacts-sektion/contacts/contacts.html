@@ -11,14 +11,14 @@
           <div class="group-header">A</div>
           <div class="contact-item">
             <div>
-              A
+              Ar
             </div>
             <div class="info">
               <div class="mame">{{ item.name }}</div>
               <div>{{ item.email }}</div>
             </div>
-            <button (click)="editContacts(i)" class="edit-btn">
-              Edit
+            <button (click)="selectedContacts(i)" class="edit-btn">
+              select
             </button>
           </div>
         }
@@ -56,9 +56,9 @@
         <div class="circle-user"></div> 
       </div>
         <div class="alignment">
-        <h2>{{ editedContacts.name }}</h2>
+        <h2>{{ selectedContact.name }}</h2>
           <div class="button-group" >
-            <div class="iconsbefore edit" (click)="editContacts(i)">
+            <div class="iconsbefore edit" (click)="editContacts(selectedContactsIndex!)">
               <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" class="icon-edit" viewBox="0 0 19 19" fill="none">
               <path d="M2 17H3.4L12.025 8.375L10.625 6.975L2 15.6V17ZM16.3 6.925L12.05 2.725L13.45 1.325C13.8333 0.941667 14.3042 0.75 14.8625 0.75C15.4208 0.75 15.8917 0.941667 16.275 1.325L17.675 2.725C18.0583 3.10833 18.2583 3.57083 18.275 4.1125C18.2917 4.65417 18.1083 5.11667 17.725 5.5L16.3 6.925ZM14.85 8.4L4.25 19H0V14.75L10.6 4.15L14.85 8.4Z"/>
               </svg>
@@ -76,9 +76,9 @@
           <div class="contacts-information">
             <h3>Contact Information</h3>
             <h4 class="email-link">Email</h4>
-            <a href="mailto:{{ editedContacts.email }}">{{ editedContacts.email }}</a>
+            <a href="mailto:{{ selectedContact.email }}">{{ selectedContact.email }}</a>
             <h4>Phone</h4>
-            <a href="tel:{{ editedContacts.name }}">{{ editedContacts.name }}</a>
+            <a href="tel:{{ selectedContact.name }}">{{ selectedContact.name }}</a>
           </div>
   }
   </section>

@@ -1,6 +1,8 @@
 import { inject, Injectable, OnDestroy } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
-import { DocumentData, QueryDocumentSnapshot, collection, onSnapshot, Unsubscribe, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { Observable } from 'rxjs';
+import { collection, collectionData, query, orderBy } from '@angular/fire/firestore';
+import { DocumentData, QueryDocumentSnapshot, onSnapshot, Unsubscribe, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { ContactsInterface } from '../../interfaces/contacts-interface';
 
 @Injectable({
@@ -43,6 +45,11 @@ export class Firebase implements OnDestroy {
       console.error('Error setting up Firestore listener:', error);
     }
   }
+    getAlphabeticalContacts() {
+    const contactsRef = collection(this.firestore, 'contacts');
+    const sortedQuery = query(contactsRef, orderBy('name'));
+    return collectionData(sortedQuery, { idField: 'id' }) as Observable<ContactsInterface[]>;
+  }
   async addContactsToDatabase(contacts:ContactsInterface){
     await addDoc(collection(this.firestore, 'contacts'), contacts)
   }
@@ -54,6 +61,7 @@ export class Firebase implements OnDestroy {
 
     });
   }
+
   async deleteContactsFromDatabase(id: string){
     await deleteDoc(doc(this.firestore, 'contacts', id) )
   };
@@ -71,3 +79,5 @@ setContactsObject(id: string, obj: ContactsInterface):ContactsInterface{
       this.unsubscribe();
     }
   }
+}
+
