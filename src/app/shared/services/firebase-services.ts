@@ -49,7 +49,6 @@ export class Firebase implements OnDestroy {
     async editContactsToDatabase(id: string, data: ContactsInterface){
     await updateDoc(doc(this.firestore, 'contacts', id),
     {
-
         name: data.name,
         email: data.email,
 
@@ -58,6 +57,8 @@ export class Firebase implements OnDestroy {
   async deleteContactsFromDatabase(id: string){
     await deleteDoc(doc(this.firestore, 'contacts', id) )
   };
+
+  
 setContactsObject(id: string, obj: ContactsInterface):ContactsInterface{
   return{
     id: id,
@@ -70,4 +71,3 @@ setContactsObject(id: string, obj: ContactsInterface):ContactsInterface{
       this.unsubscribe();
     }
   }
-}
