@@ -29,30 +29,26 @@ export class Contacts implements OnInit {
       name:'',
       email:''
     }
-     editContacts(index: number) {
-      if (index < 0 || index >= this.firebase.ContactsList.length) {
-        console.error('Invalid index:', index);
-        return;
-      }
+    editContacts(letter: string, index: number) {
+      const contact = this.groupedContacts[letter][index];
+      if (!contact) return;
       this.isEdited = true;
       this.selectedContactsIndex = index;
-      this.contactsId = this.firebase.ContactsList[index].id;
+      this.contactsId = contact.id;
       this.editedContacts = {
-        name: this.firebase.ContactsList[index].name,
-        email: this.firebase.ContactsList[index].email
+        name: contact.name,
+        email: contact.email
       };
     }
-    selectedContacts(index: number) {
-      if (index < 0 || index >= this.firebase.ContactsList.length) {
-        console.error('Invalid index:', index);
-        return;
-      }
+    selectedContacts(letter: string, index: number) {
+      const contact = this.groupedContacts[letter][index];
+      if (!contact) return;
       this.isSelected = true;
       this.selectedContactsIndex = index;
-      this.contactsId = this.firebase.ContactsList[index].id;
+      this.contactsId = contact.id;
       this.selectedContact = {
-        name: this.firebase.ContactsList[index].name,
-        email: this.firebase.ContactsList[index].email
+        name: contact.name,
+        email: contact.email
       };
     }
     saveEdit(){
@@ -70,7 +66,27 @@ export class Contacts implements OnInit {
     constructor(private contactService: Firebase){
       this.firebase;
     }
-      ngOnInit(): void {
-    this.contacts$ = this.contactService.getAlphabeticalContacts();
-  }
+   groupedContacts: { [letter: string]: ContactsInterface[] } = {};
+    ngOnInit(): void {
+      this.contacts$ = this.contactService.getAlphabeticalContacts();
+      this.contacts$.subscribe((contacts) => {
+        this.groupedContacts = this.groupContactsByFirstLetter(contacts);
+      });
+    }
+
+    private groupContactsByFirstLetter(contacts: ContactsInterface[]): { [letter: string]: ContactsInterface[] } {
+      const grouped: { [letter: string]: ContactsInterface[] } = {};
+      for (const contact of contacts) {
+        const letter = contact.name.charAt(0).toUpperCase();
+        if (!grouped[letter]) {
+          grouped[letter] = [];
+        }
+        grouped[letter].push(contact);
+      }
+      return grouped;
+    }
+
+    get groupedKeys(): string[] {
+      return Object.keys(this.groupedContacts).sort();
+    }
 }

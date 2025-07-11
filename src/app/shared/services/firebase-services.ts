@@ -16,7 +16,7 @@ export class Firebase implements OnDestroy {
  
   constructor() {
     try {
-      const contactsRef = collection(this.firestore, 'contacts');
+      const contactsRef = query(collection(this.firestore, 'contacts'), orderBy('name'));
       
       this.unsubscribe = onSnapshot(
         contactsRef,
