@@ -1,0 +1,40 @@
+.overlay-container {
+      display: flex;
+      width: 600px;
+      max-width: 100%;
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+    }
+
+    .overlay-left {
+      background: #2a3f5f;
+      color: white;
+      padding: 24px;
+      width: 40%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .overlay-right {
+      padding: 24px;
+      width: 60%;
+    }
+
+    input {
+      width: 100%;
+      margin-bottom: 12px;
+      padding: 8px;
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    button {
+      padding: 8px 16px;
+    }

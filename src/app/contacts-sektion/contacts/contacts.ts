@@ -1,20 +1,24 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, Input } from '@angular/core';
 import { Firebase } from '../../shared/services/firebase-services';
 import { OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { OverlayService } from '../../shared/services/overlay-services';
 import { ContactsInterface } from '../../interfaces/contacts-interface';
 import { FormsModule } from '@angular/forms';
-import { VocabularyAdd } from '../../vocabulary/vocabulary-add/vocabulary-add';
+import { ContactsOverlay } from './contacts-overlay/contacts-overlay';
+/* import { AddContacts } from '../add-contacts/add-contacts'; */
 
 
 @Component({
   selector: 'app-contacts',
-  imports: [CommonModule, FormsModule, VocabularyAdd],
+  imports: [CommonModule, FormsModule, ContactsOverlay],
   templateUrl: './contacts.html',
   styleUrl: './contacts.scss'
 })
 export class Contacts implements OnInit {
+   private overlayService = inject(OverlayService);
+
     contacts$!: Observable<ContactsInterface[]>;
     firebase = inject(Firebase);
     isEdited = false;
@@ -68,10 +72,17 @@ export class Contacts implements OnInit {
       this.firebase;
     }
    groupedContacts: { [letter: string]: ContactsInterface[] } = {};
+
+     open() {
+    this.overlayService.openOverlay();
+  }
     ngOnInit(): void {
       this.contacts$ = this.contactService.getAlphabeticalContacts();
       this.contacts$.subscribe((contacts) => {
         this.groupedContacts = this.groupContactsByFirstLetter(contacts);
+      });
+      document.addEventListener('closeOverlay', () => {
+      this.overlayService.close();
       });
     }
 
@@ -105,5 +116,6 @@ getColor(name: string): string {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
   }
   return colors[Math.abs(hash) % colors.length];
-}
+};
+
 }

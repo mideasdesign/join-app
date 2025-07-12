@@ -1,0 +1,19 @@
+<div class="overlay-container">
+  <div class="overlay-left">
+    <h2>{{ isEditMode ? 'Edit Contact' : 'Add Contact' }}</h2>
+    <p>Tasks are better with a team!</p>
+  </div>
+  <div class="overlay-right">
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <input formControlName="name" placeholder="Name" />
+      <input formControlName="email" placeholder="Email" />
+      <input formControlName="phone" placeholder="Phone" />
+      <div class="actions">
+        <button type="button" (click)="cancel()">Cancel</button>
+        <button type="submit" [disabled]="form.invalid">
+          {{ isEditMode ? 'Update contact' : 'Create contact' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
