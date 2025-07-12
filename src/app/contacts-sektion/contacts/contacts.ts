@@ -7,8 +7,6 @@ import { OverlayService } from '../../shared/services/overlay-services';
 import { ContactsInterface } from '../../interfaces/contacts-interface';
 import { FormsModule } from '@angular/forms';
 import { ContactsOverlay } from './contacts-overlay/contacts-overlay';
-/* import { AddContacts } from '../add-contacts/add-contacts'; */
-
 
 @Component({
   selector: 'app-contacts',
@@ -34,6 +32,14 @@ export class Contacts implements OnInit {
       name: '',
       email: ''
     }
+  addNewContact() {
+    this.overlayService.openOverlay(); // kein Parameter = "Add Mode"
+  }
+
+editContact(contact: ContactsInterface) {
+    this.overlayService.openOverlay(contact); // übergibt Kontakt als `contactToEdit`
+  }
+
     openEditContact(contact: ContactsInterface): void {
       this.isEdited = true;
       this.contactsId = contact.id;
