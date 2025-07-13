@@ -34,7 +34,7 @@ form = this.fb.group({
       this.form.patchValue({
         name: this.contactToEdit.name,
         email: this.contactToEdit.email,
-        phone: this.contactToEdit.phone ?? '',
+        phone: this.contactToEdit.phone,
       });
     }
   }
@@ -44,10 +44,10 @@ form = this.fb.group({
 
     if (this.isEditMode && this.contactToEdit?.id) {
       await this.firebase.editContactsToDatabase(this.contactToEdit.id, value as ContactsInterface);
-      this.success.show('✅ Kontakt aktualisiert');
+      this.success.show('Contact updated');
     } else {
       await this.firebase.addContactsToDatabase(value as ContactsInterface);
-      this.success.show('✅ Kontakt hinzugefügt');
+      this.success.show('Contact added');
     }
 
     document.dispatchEvent(new CustomEvent('closeOverlay'));

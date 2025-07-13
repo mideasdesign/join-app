@@ -14,6 +14,7 @@ import { ContactsOverlay } from './contacts-overlay/contacts-overlay';
   templateUrl: './contacts.html',
   styleUrl: './contacts.scss'
 })
+
 export class Contacts implements OnInit {
    private overlayService = inject(OverlayService);
 
@@ -26,29 +27,24 @@ export class Contacts implements OnInit {
     editedContacts ={
       name:'',
       email:'',
+      phone:'',
     };
+
     selectedContact: ContactsInterface = {
       id: '',
       name: '',
-      email: ''
-    }
-  addNewContact() {
-    this.overlayService.openOverlay(); // kein Parameter = "Add Mode"
-  }
+      email: '',
+      phone: '',
+    };
 
-editContact(contact: ContactsInterface) {
-    this.overlayService.openOverlay(contact); // übergibt Kontakt als `contactToEdit`
-  }
+    addNewContact() {
+      this.overlayService.openOverlay(); // kein Parameter = "Add Mode"
+    };
 
-    openEditContact(contact: ContactsInterface): void {
-      this.isEdited = true;
-      this.contactsId = contact.id;
-      this.selectedContact = contact;
-      this.editedContacts = {
-        name: contact.name,
-        email: contact.email
+    editContact(contact: ContactsInterface) {
+        this.overlayService.openOverlay(contact); // übergibt Kontakt als `contactToEdit`
       };
-    }
+
     selectedContacts(letter: string, index: number) {
       const contact = this.groupedContacts[letter][index];
       if (!contact) return;
@@ -58,30 +54,32 @@ editContact(contact: ContactsInterface) {
       this.selectedContact = {
         id: contact.id,
         name: contact.name,
-        email: contact.email
+        email: contact.email,
+        phone: contact.phone ??'',
       };
-    }
+    };
+
     saveEdit(){
       console.log('SPEICHERN:', this.contactsId, this.editedContacts);
       if (this.contactsId) {
         this.firebase.editContactsToDatabase(this.contactsId, this.editedContacts);
-      }
+      };
       this.cancelEdit();
-    }
+    };
+
     cancelEdit(): void {
       this.isEdited = false;
       this.selectedContactsIndex = null;
       this.contactsId = '';
-      this.editedContacts = { name: '', email: '' };
-    }
+      this.editedContacts = { name: '', email: '', phone: '' };
+    };
+
     constructor(private contactService: Firebase){
       this.firebase;
-    }
-   groupedContacts: { [letter: string]: ContactsInterface[] } = {};
+    };
 
-     open() {
-    this.overlayService.openOverlay();
-  }
+    groupedContacts: { [letter: string]: ContactsInterface[] } = {};
+
     ngOnInit(): void {
       this.contacts$ = this.contactService.getAlphabeticalContacts();
       this.contacts$.subscribe((contacts) => {
@@ -90,7 +88,7 @@ editContact(contact: ContactsInterface) {
       document.addEventListener('closeOverlay', () => {
       this.overlayService.close();
       });
-    }
+    };
 
     private groupContactsByFirstLetter(contacts: ContactsInterface[]): { [letter: string]: ContactsInterface[] } {
       const grouped: { [letter: string]: ContactsInterface[] } = {};
@@ -98,30 +96,30 @@ editContact(contact: ContactsInterface) {
         const letter = contact.name.charAt(0).toUpperCase();
         if (!grouped[letter]) {
           grouped[letter] = [];
-        }
+        };
         grouped[letter].push(contact);
-      }
+      };
       return grouped;
-    }
+    };
 
     get groupedKeys(): string[] {
     return Object.keys(this.groupedContacts).sort();
-  }
-  getInitials(name: string): string {
-  if (!name) return '';
-  const parts = name.trim().split(' ');
-  const first = parts[0]?.charAt(0).toUpperCase() || '';
-  const last = parts[1]?.charAt(0).toUpperCase() || '';
-  return first + last;
-}
+    };
 
-getColor(name: string): string {
-  const colors = ['#FF8A00', '#6E00FF', '#009688', '#3F51B5', '#FF4081'];
-  let hash = 0;
-  for (let i = 0; i < name.length; i++) {
-    hash = name.charCodeAt(i) + ((hash << 5) - hash);
-  }
-  return colors[Math.abs(hash) % colors.length];
-};
+    getInitials(name: string): string {
+    if (!name) return '';
+    const parts = name.trim().split(' ');
+    const first = parts[0]?.charAt(0).toUpperCase() || '';
+    const last = parts[1]?.charAt(0).toUpperCase() || '';
+    return first + last;
+    };
 
+    getColor(name: string): string {
+      const colors = ['#FF8A00', '#6E00FF', '#009688', '#3F51B5', '#FF4081'];
+      let hash = 0;
+      for (let i = 0; i < name.length; i++) {
+        hash = name.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return colors[Math.abs(hash) % colors.length];
+    };
 }
