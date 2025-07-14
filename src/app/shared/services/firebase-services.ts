@@ -2,8 +2,9 @@ import { inject, Injectable, OnDestroy } from '@angular/core';
 import { Firestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import { collection, collectionData, query, orderBy } from '@angular/fire/firestore';
-import { DocumentData, QueryDocumentSnapshot, onSnapshot, Unsubscribe, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
+import { DocumentData, QueryDocumentSnapshot, onSnapshot, Unsubscribe, addDoc, updateDoc, deleteDoc, setDoc,doc } from 'firebase/firestore';
 import { ContactsInterface } from '../../interfaces/contacts-interface';
+import { TaskInterface } from '../../interfaces/task-interface';
 
 @Injectable({
   providedIn: 'root',
@@ -63,6 +64,17 @@ export class Firebase implements OnDestroy {
   async deleteContactsFromDatabase(id: string){
     await deleteDoc(doc(this.firestore, 'contacts', id) )
   };
+
+    async createTask(task: TaskInterface) {
+    const taskRef = doc(collection(this.firestore, 'tasks'));
+    return setDoc(taskRef, task);
+  }
+
+  async updateTask(id: string, task: TaskInterface) {
+    const taskRef = doc(this.firestore, 'tasks', id);
+    const taskData = JSON.parse(JSON.stringify(task));
+    return updateDoc(taskRef, taskData);
+  }
   
 setContactsObject(id: string, obj: ContactsInterface):ContactsInterface{
   return{

@@ -1,0 +1,65 @@
+<div class="overlay-container">
+    <div class="card-wrapper form-slide">
+        <div class="left-container">
+            <div class="right-container">
+                <div class="right-content">
+                    <div class="contact-form">
+                        <div class="contact-avatar">
+                            <img src="/icons-white/person.svg" alt="person" />
+                        </div>
+                        <form [formGroup]="form" (ngSubmit)="submit()" class="task-form">
+                            <h2>{{ taskToEdit ? 'Task bearbeiten' : 'Neuen Task erstellen' }}</h2>
+
+                            <label>Titel</label>
+                            <input type="text" formControlName="title" />
+
+                            <label>Beschreibung</label>
+                            <textarea formControlName="description"></textarea>
+
+                            <label>Fällig am</label>
+                            <input type="datetime-local" formControlName="dueDate" />
+
+                            <label>Priorität</label>
+                            <select formControlName="priority">
+                                <option value="Low">Niedrig</option>
+                                <option value="Medium">Mittel</option>
+                                <option value="High">Hoch</option>
+                            </select>
+
+                            <label>Kategorie</label>
+                            <input type="text" formControlName="category" />
+
+                            <label>Zugewiesen an</label>
+                            <div formArrayName="assignedTo" class="multi-select">
+                                <div *ngFor="let user of userList">
+                                    <label>
+                                        <input type="checkbox" [value]="user"
+                                            (change)="onUserCheckboxChange($event, user)"
+                                            [checked]="isUserSelected(user)" />
+                                        {{ user }}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="subtasks">
+                                <label>Subtasks</label>
+                                <div formArrayName="subtasks">
+                                    <div *ngFor="let subtask of form.controls['subtasks']['controls']; let i = index"
+                                        [formGroupName]="i">
+                                        <input formControlName="title" placeholder="Subtask Titel" />
+                                        <button type="button" (click)="removeSubtask(i)">Entfernen</button>
+                                    </div>
+                                </div>
+                                <button type="button" (click)="addSubtask()">+ Subtask hinzufügen</button>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="submit" [disabled]="form.invalid">Speichern</button>
+                                <button type="button" (click)="cancel()">Abbrechen</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
