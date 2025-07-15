@@ -28,6 +28,7 @@ export class Contacts implements OnInit {
       name:'',
       email:'',
       phone:'',
+      isLoggedInUser: false,
     };
 
     selectedContact: ContactsInterface = {
@@ -35,6 +36,7 @@ export class Contacts implements OnInit {
       name: '',
       email: '',
       phone: '',
+      isLoggedInUser: false,
     };
 
     addNewContact() {
@@ -44,6 +46,9 @@ export class Contacts implements OnInit {
     editContact(contact: ContactsInterface) {
         this.overlayService.openOverlay(contact); // übergibt Kontakt als `contactToEdit`
       };
+      deleteItem(contactId: string) {
+        this.firebase.deleteContactsFromDatabase(contactId);
+      }
 
     selectedContacts(letter: string, index: number) {
       const contact = this.groupedContacts[letter][index];
@@ -56,6 +61,7 @@ export class Contacts implements OnInit {
         name: contact.name,
         email: contact.email,
         phone: contact.phone ??'',
+        isLoggedInUser: contact.isLoggedInUser || false,
       };
     };
 
@@ -71,8 +77,29 @@ export class Contacts implements OnInit {
       this.isEdited = false;
       this.selectedContactsIndex = null;
       this.contactsId = '';
-      this.editedContacts = { name: '', email: '', phone: '' };
+      this.editedContacts = { name: '', email: '', phone: '', isLoggedInUser: false };
     };
+
+    showDeleteConfirm = false;
+    pendingDeleteId: string | null = null;
+
+    promptDelete(contactId: string) {
+      this.pendingDeleteId = contactId;
+      this.showDeleteConfirm = true;
+    }
+
+    confirmDelete() {
+      if (this.pendingDeleteId) {
+        this.deleteItem(this.pendingDeleteId);
+      }
+      this.showDeleteConfirm = false;
+      this.pendingDeleteId = null;
+    }
+
+    cancelDelete() {
+      this.showDeleteConfirm = false;
+      this.pendingDeleteId = null;
+    }
 
     constructor(private contactService: Firebase){
       this.firebase;

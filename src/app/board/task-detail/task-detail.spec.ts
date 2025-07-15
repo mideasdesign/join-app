@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { VocabularyAdd } from './vocabulary-add';
+import { TaskDetail } from './task-detail';
 
-describe('VocabularyAdd', () => {
-  let component: VocabularyAdd;
-  let fixture: ComponentFixture<VocabularyAdd>;
+describe('TaskDetail', () => {
+  let component: TaskDetail;
+  let fixture: ComponentFixture<TaskDetail>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [VocabularyAdd]
+      imports: [TaskDetail]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(VocabularyAdd);
+    fixture = TestBed.createComponent(TaskDetail);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

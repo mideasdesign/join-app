@@ -41,10 +41,13 @@
   flex-direction: row;
   position: relative;
   @include center;
-  width: 100%;
+  width: 60svw;
   max-width: 1220px;
+  height:45svh;
 @media(width < 769px){
   flex-direction: column;
+  height:100%;
+  width:100%;
 }
 
   &.mobile {
@@ -61,6 +64,7 @@
   background-color: $color-primary;
     @include center;
     height: 100%;
+    padding:3rem;
 @media(width < 769px){
   flex:1;
   width:100%;
@@ -126,7 +130,7 @@
   .right-content {
   position: relative;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   justify-content: center;
   flex: 1;
 
@@ -156,6 +160,19 @@
           min-height: 30px;
           width: 58%;
           height: 58%;
+        }
+        @media (width > 770px){
+          position:relative;
+          left: 0;
+          top: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          width: 120px;
+          height: 120px;
+          z-index:1;
+          margin-right: 3rem;
+
         }
       }
       form {

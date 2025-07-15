@@ -4,7 +4,7 @@ import { RouterOutlet } from '@angular/router';
 import { Header } from './Sidebar/header/header';
 import { SectionSidebar } from './Sidebar/section-sidebar/section-sidebar';
 import { CommonModule } from '@angular/common';
-import { Vocabulary } from './vocabulary/vocabulary';
+
 
 @Component({
   selector: 'app-root',

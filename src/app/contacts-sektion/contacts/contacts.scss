@@ -41,6 +41,9 @@
     display: flex;
     flex-direction: column;
     max-width: 450px;
+    @media(width < 860px){
+      flex:0;
+    }
   .mobile & {
     width: 100%;
     margin-bottom: $spacing-base;
@@ -88,13 +91,7 @@
       font-weight: $font-weight-regular;
     }
   }
-/*   .mobile.show-details & {
-    position: relative;
-    z-index: 1;
-    background-color: #fff;
-    padding-bottom: 20px;
-    margin-bottom: 10px;
-  } */
+
   h2 {
     font-size: var(--font-size-2xl);
     font-weight: 700;
@@ -151,10 +148,12 @@
 .mobile-btn-add-contact{
 position: sticky;
     z-index: 100;
-    bottom: 10%;
-    left: 80%;
+    top:84%;
+    right:5%;
     width: 50px;
     height: 50px;
+    padding:5px 14px;
+
     display: flex;
     border-radius: 50%;
     justify-content: center;
@@ -168,7 +167,7 @@ position: sticky;
       .mobile-btn-add-contact{
         display: none;
       }
- 
+
   }
 .contact-list {
   min-height: 100px;
@@ -243,6 +242,25 @@ position: sticky;
     font-size: $spacing-base;
     margin-bottom: 0.25rem;
     color: $color-black;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .logged-in-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background-color: $color-primary;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+
+      img {
+        width: 12px;
+        height: 12px;
+        filter: brightness(0) invert(1);
+      }
+    }
   }
   .email, .phone {
     font-size: 0.85rem;
@@ -296,7 +314,7 @@ position: sticky;
   gap: $spacing-4xl;
   justify-content: start;
   align-items: center;
-  //align-items: start;
+  margin-bottom:2rem;
   .mobile & {
     gap: 1.5rem;
     margin-bottom: $spacing-xl;
@@ -313,6 +331,15 @@ position: sticky;
   }
   & h2{
     text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    .logged-in-badge-detail {
+      font-size: 16px;
+      color: $color-primary;
+      font-weight: normal;
+    }
   }
 }
 .circle-user  {
@@ -338,6 +365,7 @@ position: sticky;
   gap: $spacing-2xl;
   top: $spacing-base;
   color:$color-primary;
+  justify-content: center;
 
   .mobile & {
     justify-content: center;
@@ -387,23 +415,4 @@ position: sticky;
 }
  .iconsbefore:hover svg {
   fill: $color-subtask-bar;  // Hover-Farbe (rot als Beispiel)
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.overlay-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }

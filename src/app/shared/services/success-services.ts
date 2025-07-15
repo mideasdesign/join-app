@@ -11,7 +11,7 @@ export class SuccessServices {
     const position = this.overlay.position()
       .global()
       .centerHorizontally()
-      .top('30px');
+      .top('60px');
 
     const overlayRef = this.overlay.create(new OverlayConfig({
       positionStrategy: position,

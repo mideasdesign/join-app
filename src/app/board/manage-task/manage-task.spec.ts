@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { Vocabulary } from './vocabulary';
+import { ManageTask } from './manage-task';
 
-describe('Vocabulary', () => {
-  let component: Vocabulary;
-  let fixture: ComponentFixture<Vocabulary>;
+describe('ManageTask', () => {
+  let component: ManageTask;
+  let fixture: ComponentFixture<ManageTask>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Vocabulary]
+      imports: [ManageTask]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(Vocabulary);
+    fixture = TestBed.createComponent(ManageTask);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

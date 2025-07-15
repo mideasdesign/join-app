@@ -15,7 +15,7 @@
         <div class="right-content">
             <div class="contact-form" >
                 <div class="contact-avatar">
-                    <img src="/icons-white/person.svg" alt="person" /> 
+                    <img src="/icons-white/person.svg" alt="person" />
                 </div>
                     <form [formGroup]="form" (ngSubmit)="submit()">
                     <div class="input-group">
@@ -44,9 +44,9 @@
                         <img src="/icons/call.svg" alt="phone" />
                     </div>
                     <div class="button-group">
-                        <button type="button" class="cancel-btn" (click)="cancel()">Cancel</button>
-                        <button type="submit" class="create-btn" [disabled]="form.invalid">
-                            {{ isEditMode ? 'Update contact' : 'Create contact' }}
+                        <button type="button" class="cancel-btn btn " (click)="cancel()">Cancel</button>
+                        <button type="submit" class="create-btn btn " [disabled]="form.invalid">
+                            {{ isEditMode ? 'Update' : 'Create' }}
                         </button>
                     </div>
                 </form>
