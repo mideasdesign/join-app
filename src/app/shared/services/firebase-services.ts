@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { collection, collectionData, query, orderBy } from '@angular/fire/firestore';
 import { DocumentData, QueryDocumentSnapshot, onSnapshot, Unsubscribe, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { ContactsInterface } from '../../interfaces/contacts-interface';
+import { TaskInterface } from '../../interfaces/task-interface';
 
 @Injectable({
   providedIn: 'root',
@@ -70,8 +71,25 @@ setContactsObject(id: string, obj: ContactsInterface):ContactsInterface{
     name: obj.name,
     email: obj.email,
     phone: obj.phone,
+
   };
 }
+  async addTaskToDatabase(tasks:TaskInterface){
+    await addDoc(collection(this.firestore, 'tasks'), tasks)
+  }
+  async editTaskToDatabase(id: string, editedTasks: TaskInterface){
+  await updateDoc(doc(this.firestore, 'tasks', id),
+  {
+        title: editedTasks.title,
+        description: editedTasks.description,
+        dueDate: editedTasks.dueDate,
+        priority: editedTasks.priority,
+        assignedTo: editedTasks.assignedTo,
+        category: editedTasks.category,
+        subtasks: editedTasks.subtasks,
+  });
+}
+
   ngOnDestroy() {
     if (this.unsubscribe) {
       this.unsubscribe();
