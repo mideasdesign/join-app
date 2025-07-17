@@ -10,15 +10,13 @@ import {
 } from '@angular/cdk/drag-drop';
 import { OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Firebase } from '../../Shared/firebase/firebase-services/firebase-services';
+import { Firebase } from '../../shared/services/firebase-services';
 import { CommonModule } from '@angular/common';
 import {MatProgressBarModule} from '@angular/material/progress-bar';
-import { TaskService } from '../../Shared/firebase/firebase-services/task-service';
+import { TaskService } from '../../shared/services/task-service';
 import { FormsModule } from '@angular/forms';
 import { TaskInterface } from '../../interfaces/task-interface';
 import { TaskOverlay } from '../task-overlay/task-overlay';
-import { TaskDetailOverlay } from '../task-detail-overlay/task-detail-overlay';
-
 
 @Component({
   selector: 'app-manage-task',
@@ -30,7 +28,6 @@ import { TaskDetailOverlay } from '../task-detail-overlay/task-detail-overlay';
     CdkDragPlaceholder,
     FormsModule,
     TaskOverlay,
-    TaskDetailOverlay
   ],
   templateUrl: './manage-task.html',
   styleUrl: './manage-task.scss',

@@ -5,8 +5,8 @@ import {
   OverlayConfig,
 } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { ContactsOverlay } from '../../contacts-sektion/contacts/contacts-overlay/contacts-overlay';
-import { ContactsInterface } from '../../interfaces/contacts-interface';
+import { ContactsOverlay } from '../../../contacts-sektion/contacts/contacts-overlay/contacts-overlay';
+import { ContactsInterface } from '../../../interfaces/contacts-interface';
 
 @Injectable({ providedIn: 'root' })
 export class OverlayService {

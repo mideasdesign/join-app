@@ -2,8 +2,8 @@ import { Component, Input, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TaskInterface } from '../../interfaces/task-interface';
-import { Firebase } from '../../Shared/firebase/firebase-services/firebase-services';
-import { SuccessServices } from '../../Shared/firebase/firebase-services/success-services';
+import { Firebase } from '../../shared/services/firebase-services';
+import { SuccessServices } from '../../shared/services/success-services';
 
 @Component({
   selector: 'app-add-task',

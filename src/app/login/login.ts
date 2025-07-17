@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { LoginService } from './login.service';
-import { AuthService } from '../Shared/firebase/firebase-services/auth.service';
+import { AuthService } from '../shared/services/auth.service';
 import { RouterModule, Router } from '@angular/router';
 import { LogoAnimation } from './logo-animation';
 

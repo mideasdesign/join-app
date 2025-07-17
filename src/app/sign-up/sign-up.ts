@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AuthService } from '../Shared/firebase/firebase-services/auth.service';
+import { AuthService } from '../shared/services/auth.service';
 import { RouterModule, Router } from '@angular/router';
 
 @Component({

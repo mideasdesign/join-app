@@ -1,7 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { Overlay, OverlayConfig } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { Success } from '../../success/success';
+import { Success } from '../../../success/success';
 
 @Injectable({ providedIn: 'root' })
 export class SuccessServices {
@@ -11,7 +11,7 @@ export class SuccessServices {
     const position = this.overlay.position()
       .global()
       .centerHorizontally()
-      .top('60px');
+      .top('30px');
 
     const overlayRef = this.overlay.create(new OverlayConfig({
       positionStrategy: position,
