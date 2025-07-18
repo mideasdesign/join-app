@@ -13,6 +13,22 @@
 .row{
     flex-direction: row;
 }
+  .parent {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: 10px;
+    padding: 10px;
+    background: #eee;
+  }
+.grid-col-span-2{
+    grid-column:span 2;
+}
+  .grid-3-col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: $spacing-2xs;
+  }
 .space-between{
     justify-content:space-between;
 }
@@ -71,21 +87,24 @@
     justify-content: center;
     &:hover{
         color:$color-white;
-        transform: scale(1.2,1.2);
-        transform-origin: center;
-        transition: all;
-        transition-duration: 150ms;
         transition-timing-function: ease-in-out;
         & .circle-primary-color{
             background: $color-white;
         }
     }
 }
+.hover-scale-btn:hover{
+    transform: scale(1.1,1.1);
+    transform-origin: center;
+    transition: all;
+    transition-duration: 150ms;
+    transition-timing-function: ease-in-out;
+}
 .summery-card{
     gap: $spacing-3xl;
 }
-.card-circle-content:hover svg {
-  fill: $color-primary;  // Hover-Farbe (rot als Beispiel)
+ .card-circle-content:hover svg {
+  fill: $color-primary;  
 }
 .card-circle-content > *:hover{
     h4, h5{
@@ -93,7 +112,7 @@
     }
 }
 .urgent-circle, .urgent-content {
-    min-width: 192px;
+    min-width: 172px;
     text-align: center;
 }
 .urgent-content{
@@ -109,11 +128,13 @@
     gap:$spacing-2xl;
 }
 .tasks-overview{
-    display:flex;
-    flex-wrap:wrap;
-    min-width: 5ch;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto auto;
+    gap: $spacing-sm;
+    padding: $spacing-2xs;
     max-width: 400px;
-    flex-basis: 100%;
+
 }
 .margin-bottom{
     margin-bottom: $spacing-5xl;
@@ -129,32 +150,18 @@
     font-weight: 700;
   }
   & h3{
-        font-size: var(--font-size-2xl);
-        color:$color-subtask-bar;
+    font-size: var(--font-size-2xl);
+    color:$color-subtask-bar;
   }
 }
 
-.dashboard-header {
-    display: flex;
-    align-items: center;
-    gap:$spacing-base;
-    flex-wrap: wrap;
-
-    & h1{
-        font-size: var(--font-size-2xl);
-        margin: 0;
-        display: inline-block;
-    }
-    & h2{
-        color:$color-primary;
-    }
-}
-.dashboard-header span {
-  color: #555;
-  margin-left: 1rem;
-  font-size: 1rem;
-  border-left: 2px solid #3498db;
-  padding-left: 1rem;
+.summary-header {
+  display: flex;
+  flex-wrap: wrap;
+  width:auto;
+  align-items: center;
+    margin-bottom: $spacing-3xl;
+    height:60px;
 }
 
 
