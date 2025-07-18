@@ -7,20 +7,18 @@ import {MatProgressBarModule} from '@angular/material/progress-bar';
 import { TaskService } from '../../Shared/firebase/firebase-services/task-service';
 import { FormsModule } from '@angular/forms';
 import { TaskInterface } from '../../interfaces/task-interface';
-import { TaskOverlay } from '../task-overlay/task-overlay';
-import { TaskDetailOverlay } from '../task-detail-overlay/task-detail-overlay';
+import { TaskDetail } from '../task-detail/task-detail';
 import { TaskFilterService } from './task-filter';
-
 
 @Component({
   selector: 'app-manage-task',
   standalone: true,
-  imports: [CommonModule, DragDropModule, MatProgressBarModule, CdkDragPlaceholder, FormsModule, TaskOverlay, TaskDetailOverlay],
+  imports: [CommonModule, DragDropModule, MatProgressBarModule, CdkDragPlaceholder, FormsModule, TaskDetail],
   templateUrl: './manage-task.html',
   styleUrl: './manage-task.scss',
 })
 export class ManageTask implements OnInit {
-  private TaskService = inject(TaskService);
+  public TaskService = inject(TaskService);
   private filterService = inject(TaskFilterService);
   tasks$!: Observable<TaskInterface[]>;
   firebase = inject(Firebase);
@@ -103,29 +101,22 @@ export class ManageTask implements OnInit {
         }
 
         task.status = newStatus;
-        2156
         this.firebase.editTaskToDatabase(task.id, task);
       }
     }
   }
-  selectedtasks(letter: string, index: number) {
-    const task = this.tasks[index];
+  selectTask(task: TaskInterface) {
     if (!task) return;
     this.isSelected = true;
-    this.selectedTasksIndex = index;
+    this.selectedTask = { ...task };
     this.taskId = task.id;
-    this.selectedTask = {
-      status: task.status,
-      title: task.title,
-      description: task.description,
-      dueDate: task.dueDate,
-      priority: task.priority,
-      assignedTo: task.assignedTo,
-      category: task.category,
-      subtasks: task.subtasks,
-      id: task.id
-    };
-  };
+  }
+
+  closeOverlay() {
+    this.isSelected = false;
+    this.selectedTask = undefined;
+  }
+
     addNewTask() {
       this.TaskService.openOverlay(); // kein Parameter = "Add Mode"
     };
