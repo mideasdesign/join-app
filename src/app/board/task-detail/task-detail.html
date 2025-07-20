@@ -50,8 +50,10 @@
               @if (selectedTask.subtasks && selectedTask.subtasks.length > 0) {
                 @for (subtask of selectedTask.subtasks; track $index) {
                  <div class="checkbox-container">
-                    <input class="custom-checkbox" type="checkbox" [checked]="subtask.done" [id]="'subtask-' + $index">
-                    <label [for]="'subtask-' + $index" class="label-for-checkbox">{{ subtask.title }}</label>
+                    <input class="custom-checkbox" type="checkbox" [checked]="subtask?.done || false" [id]="'subtask-' + $index">
+                    <label [for]="'subtask-' + $index" class="label-for-checkbox">
+                      {{ subtask?.title || 'Subtask ' + ($index + 1) }}
+                    </label>
                   </div> 
                 }
               } @else {
