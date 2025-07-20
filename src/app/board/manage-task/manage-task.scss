@@ -63,21 +63,28 @@ h4{
 .category{
   border-radius: $card-radius;
   padding: $spacing-2xs;
-  background:$color-badge-userstory;
   font-size: var(--font-size-sm);
-  color:$color-lighter-gray;
+  color:$color-white;
+  font-weight: 500;
+}
+
+// Dynamic category colors
+.category-userstory {
+  background-color: $color-badge-userstory;
+}
+
+.category-technical {
+  background-color: $color-badge-technical;
+}
+
+.category-default {
+  background-color: $color-primary;
 }
 .user-story-clr{
     background:$color-badge-userstory;
 }
 .tecnical-clr{
     background:$color-medium-gray;
-}
-.blue{
-    background: $color-avatar-3;
-}
-.red{
-    background: $color-accent-urgent;
 }
 .position-absolute{
     position: absolute;
@@ -203,4 +210,44 @@ h4{
   }
   .rounded{
     border-radius: 50%;
+  }
+
+  // Contact initials styling for task cards
+  .assigned-contacts {
+    gap: 4px;
+    align-items: center;
+  }
+
+  .circle-initials {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: $color-white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 12px;
+    flex-shrink: 0;
+    box-shadow: $card-shadow;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    border: 2px solid $color-white;
+  }
+
+  .circle-initials:not(:first-child) {
+    margin-left: -8px;
+  }
+
+  .priority-indicator {
+    font-size: 12px;
+    font-weight: 500;
+    color: $color-subtask-bar;
+  }
+
+  .space-between {
+    justify-content: space-between;
+  }
+
+  .align-center {
+    align-items: center;
   }

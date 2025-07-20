@@ -1,4 +1,4 @@
-import { Component, inject, OnInit} from '@angular/core';
+import { Component, inject, OnInit, OnDestroy} from '@angular/core';
 import { CdkDropList, CdkDrag, DragDropModule, CdkDragDrop, CdkDragPlaceholder, moveItemInArray, transferArrayItem,} from '@angular/cdk/drag-drop';
 import { Observable } from 'rxjs';
 import { Firebase } from '../../Shared/firebase/firebase-services/firebase-services';
@@ -17,7 +17,7 @@ import { TaskFilterService } from './task-filter';
   templateUrl: './manage-task.html',
   styleUrl: './manage-task.scss',
 })
-export class ManageTask implements OnInit {
+export class ManageTask implements OnInit, OnDestroy {
   public TaskService = inject(TaskService);
   private filterService = inject(TaskFilterService);
   tasks$!: Observable<TaskInterface[]>;
@@ -28,6 +28,7 @@ export class ManageTask implements OnInit {
   tasks: TaskInterface[] = [];
   searchTerm: string = '';
   filteredColumns: any[] = [];
+  private editOverlayListener?: (event: any) => void;
 
 
   columns = [
@@ -44,6 +45,19 @@ export class ManageTask implements OnInit {
       this.updateColumns();
       this.filteredColumns = [...this.columns];
     });
+
+    // Event-Listener für Edit-Overlay
+    this.editOverlayListener = (event: any) => {
+      this.selectedTask = event.detail.task;
+      this.editTask(event.detail.task);
+    };
+    document.addEventListener('openEditOverlay', this.editOverlayListener);
+  }
+
+  ngOnDestroy() {
+    if (this.editOverlayListener) {
+      document.removeEventListener('openEditOverlay', this.editOverlayListener);
+    }
   }
 
   updateColumns() {
@@ -130,6 +144,75 @@ export class ManageTask implements OnInit {
 
   selectedTasksIndex?: number;
   selectedTask?: TaskInterface;
+
+  /**
+   * Generiert Initialen aus einem Namen
+   * @param name - Der vollständige Name
+   * @returns Die Initialen
+   */
+  getInitials(name: string): string {
+    return this.TaskService.getInitials(name);
+  }
+
+  /**
+   * Generiert eine konsistente Farbe für einen Namen
+   * @param name - Der Name des Mitarbeiters
+   * @returns Eine Hex-Farbe
+   */
+  getColor(name: string): string {
+    return this.TaskService.getColor(name);
+  }
+
+  /**
+   * Findet den Namen eines Kontakts anhand der ID
+   * @param contactId - Die ID des Kontakts
+   * @returns Der Name des Kontakts oder leerer String
+   */
+  getContactName(contactId: string): string {
+    const contact = this.firebase.ContactsList.find(c => c.id === contactId);
+    return contact ? contact.name : '';
+  }
+
+  /**
+   * Berechnet den Fortschritt der Subtasks als Prozent
+   * @param task - Das Task-Objekt
+   * @returns Prozentfortschritt (0-100)
+   */
+  getSubtaskProgress(task: TaskInterface): number {
+    if (!task.subtasks || task.subtasks.length === 0) {
+      return 100;
+    }
+    const completed = task.subtasks.filter(subtask => subtask.done).length;
+    return Math.round((completed / task.subtasks.length) * 100);
+  }
+
+  /**
+   * Zählt die abgeschlossenen Subtasks
+   * @param task - Das Task-Objekt
+   * @returns Anzahl der abgeschlossenen Subtasks
+   */
+  getCompletedSubtasks(task: TaskInterface): number {
+    if (!task.subtasks || task.subtasks.length === 0) {
+      return 0;
+    }
+    return task.subtasks.filter(subtask => subtask.done).length;
+  }
+
+  /**
+   * Bestimmt die CSS-Klasse für eine Kategorie
+   * @param category - Die Kategorie der Task
+   * @returns Die entsprechende CSS-Klasse
+   */
+  getCategoryClass(category: string): string {
+    switch (category.toLowerCase()) {
+      case 'user story':
+        return 'category-userstory';
+      case 'technical task':
+        return 'category-technical';
+      default:
+        return 'category-default';
+    }
+  }
 
   /**
    * Applies filter to columns based on search term
