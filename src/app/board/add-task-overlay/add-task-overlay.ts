@@ -2,15 +2,16 @@ import { Component, Input, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TaskInterface } from '../../interfaces/task-interface';
-import { Firebase } from '../../shared/services/firebase-services';
-import { SuccessServices } from '../../shared/services/success-services';
+import { Firebase } from '../../Shared/firebase/firebase-services/firebase-services';
+import { SuccessServices } from '../../Shared/firebase/firebase-services/success-services';
 import { AddTask } from '../add-task/add-task';
 
+
 @Component({
-  selector: 'app-task-overlay',
+  selector: 'app-add-task-overlay',
  imports: [CommonModule, ReactiveFormsModule, AddTask],
-  templateUrl: './task-overlay.html',
-  styleUrl: './task-overlay.scss'
+  templateUrl: './add-task-overlay.html',
+  styleUrl: './add-task-overlay.scss'
 })
 
 export class TaskOverlay{
@@ -19,13 +20,6 @@ export class TaskOverlay{
   private firebase = inject(Firebase);
 
   @Input() taskToEdit?: TaskInterface;
-
-
-contactsList = [
-  { id: 'uid123', name: 'Heinz Müller', email: 'heinz@mail.de' },
-  { id: 'uid456', name: 'Miriam Peters', email: 'miriam@mail.de' },
-  { id: 'uid789', name: 'Harald Schmidt', email: 'harald@mail.de' },
-]; // Später dynamisch via Firestore
 
 form = this.fb.group({
   title: ['', Validators.required],

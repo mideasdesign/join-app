@@ -1,9 +1,9 @@
 import { Component, inject, Input } from '@angular/core';
-import { Firebase } from '../../shared/services/firebase-services';
+import { Firebase } from '../../Shared/firebase/firebase-services/firebase-services';
 import { OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { OverlayService } from '../../shared/services/overlay-services';
+import { OverlayService } from '../../Shared/firebase/firebase-services/overlay-services';
 import { ContactsInterface } from '../../interfaces/contacts-interface';
 import { FormsModule } from '@angular/forms';
 import { ContactsOverlay } from './contacts-overlay/contacts-overlay';
@@ -21,7 +21,7 @@ export class Contacts implements OnInit {
     contacts$!: Observable<ContactsInterface[]>;
     firebase = inject(Firebase);
     isEdited = false;
-    isSelected = false;
+    public isSelected = false;
     selectedContactsIndex: number | null = null;
     contactsId?: string ='';
     editedContacts ={

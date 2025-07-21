@@ -5,33 +5,13 @@ import {
   OverlayConfig,
 } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { TaskOverlay } from '../../board/add-add-task-overlay/add-add-task-overlay';
-import { TaskInterface } from '../../interfaces/task-interface';
-import { Observable } from 'rxjs';
-import { collectionData, Firestore, collection, doc } from '@angular/fire/firestore';
-import { ContactsInterface } from '../../interfaces/contacts-interface';
+import { AddTask } from '../../../board/add-task/add-task';
+import { TaskInterface } from '../../../interfaces/task-interface';
 
 @Injectable({ providedIn: 'root' })
-export class TaskService {
+export class TaskOverlayService {
   private overlayRef: OverlayRef | null = null;
   private overlay = inject(Overlay);
-  firestore: Firestore = inject(Firestore);
-
-  constructor() {}
-
-  getContactsRef = ():Observable<ContactsInterface[]> => {
-    const contactsRef = collection(this.firestore, 'contacts');
-    return collectionData(contactsRef, { idField: 'id' }) as Observable<ContactsInterface[]>;
-  }
-
-  getTasks = (): Observable<TaskInterface[]> => {
-    const tasksRef = collection(this.firestore, 'tasks');
-    return collectionData(tasksRef, { idField: 'id' }) as Observable<TaskInterface[]>;
-  }
-
-  getSingleTask(colId: string, docId: string){
-    return doc(collection(this.firestore, colId), docId);
-  }
 
   openOverlay(taskToEdit?: TaskInterface) {
     const config = new OverlayConfig({
@@ -45,9 +25,10 @@ export class TaskService {
     });
 
     this.overlayRef = this.overlay.create(config);
-    const portal = new ComponentPortal(TaskOverlay);
+    const portal = new ComponentPortal(AddTask);
     const componentRef = this.overlayRef.attach(portal);
 
+    // ❗ WICHTIG: Task übergeben, wenn Edit-Modus
     if (taskToEdit) {
       componentRef.instance.taskToEdit = taskToEdit;
     }

@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TaskOverlay } from './task-overlay';
+import { SectionSidebar } from './section-sidebar';
 
-describe('TaskOverlay', () => {
-  let component: TaskOverlay;
-  let fixture: ComponentFixture<TaskOverlay>;
+describe('SectionSidebar', () => {
+  let component: SectionSidebar;
+  let fixture: ComponentFixture<SectionSidebar>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [TaskOverlay]
+      imports: [SectionSidebar]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(TaskOverlay);
+    fixture = TestBed.createComponent(SectionSidebar);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
