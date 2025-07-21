@@ -1,12 +1,24 @@
 @use "index" as *;
 
+.form-slide {
+  animation: slideInFromRight 0.3s ease-out forwards;
+  
+  @keyframes slideInFromRight {
+    0% {
+      transform: translateX(100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
+  }
+}
+
 .add-task-container {
   width: 100%;
   height: 100%;
   margin: 0;
-  padding: 2rem;
-  background-color: transparent;
-  border-radius: 0;
+  background-color: $color-white;
+  border-radius: $spacing-sm;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
@@ -209,13 +221,30 @@ img {
     }
   }
 }
-
+.subtasks{
+  border: 1px solid $color-light-gray;
+  border-radius: $spacing-2xs;
+  background:$color-white;
+  & input{
+    max-width:380px;
+    border:0px solid transparent;
+  }
+  & button{
+    border: 0px solid  transparent;
+    margin-left:1rem;
+    background:$color-white;
+    color: $color-medium-gray;
+    &:hover{
+      color:$color-primary;
+      font-size: var(--font-size-base);
+      cursor: pointer;
+    }
+  }
+}
 select {
-
-  
   font: inherit;
   line-height: 1.5em;
-  padding: 0.5em 3.5em 0.5em 1em;
+  padding: $spacing-xs $spacing-xl $spacing-xs $spacing-xs;
   appearance: none;
   -moz-appearance: none;
 }
@@ -264,35 +293,93 @@ select.minimal:focus {
 }
 /* Multiselect: Zeilenhöhe und Scrollbar */
 select.minimal[multiple] {
-  height: 100%;
+  height: 120px; /* Feste Höhe statt 100% */
   overflow-y: auto;
-
+  background-image: none; /* Entfernt den Dropdown-Pfeil bei Multiselect */
+  
   /* Scrollbar ausblenden für Webkit-Browser (Chrome, Safari, Edge) */
   &::-webkit-scrollbar {
     width: 0px;
     background: transparent;
   }
-
   /* Scrollbar ausblenden für Firefox */
   scrollbar-width: none;
 }
-
-
-
 /* Option-Styles */
 select.minimal option {
-  padding: 6px 10px;
+  padding: 8px 12px;
   border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.4;
+  
+  /* Styling für bessere Lesbarkeit */
+  &:checked {
+    background: $color-primary !important;
+    color: white !important;
+    font-weight: 500;
+  }
+  
+  &:hover:not(:checked) {
+    background: #f0f0f0 !important;
+    color: $color-text-heading !important;
+  }
 }
-
 /* Optional: Hover- und Selected-Effekt */
 select.minimal option:checked,
 select.minimal option:hover {
   background: #e0e7ff;
   color: #222;
 }
-
 select:-moz-focusring {
   color: transparent;
   text-shadow: 0 0 0 #000;
+}
+
+/* Assigned Contacts Display Styles */
+.assigned-contacts-display {
+  margin-top: 12px;
+  
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    color: $color-text-heading;
+    margin-bottom: 8px;
+    display: block;
+  }
+  
+  .contacts-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    
+    .contact-item-display {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background-color: #f8f9fa;
+      border-radius: 20px;
+      border: 1px solid #e9ecef;
+      
+      .circle {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 500;
+        font-size: 12px;
+        flex-shrink: 0;
+      }
+      
+      .contact-name {
+        font-size: 14px;
+        color:$color-medium-gray;
+        font-weight: 400;
+      }
+    }
+  }
 }

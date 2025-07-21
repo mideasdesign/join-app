@@ -1,11 +1,11 @@
 import { Component, Input, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Observable } from 'rxjs';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, FormArray, FormControl, Validators, ReactiveFormsModule } from '@angular/forms';
 import { TaskInterface } from '../../interfaces/task-interface';
-import { TaskService } from '../../shared/services/task-service';
-import { Firebase } from '../../shared/services/firebase-services';
-import { SuccessServices } from '../../shared/services/success-services';
+import { TaskService } from '../../Shared/firebase/firebase-services/task-service';
+import { Firebase } from '../../Shared/firebase/firebase-services/firebase-services';
+import { SuccessServices } from '../../Shared/firebase/firebase-services/success-services';
 import { ContactsInterface } from '../../interfaces/contacts-interface';
 
 @Component({
@@ -20,35 +20,72 @@ import { ContactsInterface } from '../../interfaces/contacts-interface';
 export class AddTask implements OnInit{
   private success = inject(SuccessServices);
   private taskService = inject(TaskService);
-  private fb = inject(FormBuilder);
   private firebase = inject(Firebase);
   public ContactsList: ContactsInterface[] = [];
   @Input() taskToEdit?: TaskInterface;
   @Input() contactToEdit?: ContactsInterface;
 
-form = this.fb.group({
-  status:'todo',
-  title: ['', Validators.required],
-  description: ['', Validators.required],
-  dueDate: [''],
-  priority: ['', Validators.required],
-  category: ['', Validators.required],
+form: FormGroup;
 
-  assignedTo: this.fb.control<string[]>([], Validators.required),
+constructor(private fb: FormBuilder) {
+  this.form = this.fb.group({
+    status:'todo',
+    title: ['', Validators.required],
+    description: ['', Validators.required],
+    dueDate: ['', Validators.required],
+    priority: ['', Validators.required],
+    assignedTo: [[], Validators.required],
+    category: ['', Validators.required],
+    subtasks: this.fb.array([this.fb.control('', Validators.required)])
+  });
+}
 
-  subtasks: this.fb.array([]),
-});
+get subtasks(): FormArray {
+  return this.form.get('subtasks') as FormArray;
+}
 
-  get isEditMode(): boolean {
-    return !!this.taskToEdit;
+get subtaskControls(): FormControl[] {
+  // explizites Mapping, damit wirklich FormControl[] zurückgegeben wird
+  return (this.form.get('subtasks') as FormArray).controls.map(c => c as FormControl);
+}
+
+addSubtask() {
+  const subtasks = this.form.get('subtasks') as FormArray;
+  subtasks.push(this.fb.control('', Validators.required));
+}
+
+removeSubtask(index: number) {
+  const subtasks = this.form.get('subtasks') as FormArray;
+  if (subtasks.length > 1) {
+    subtasks.removeAt(index);
   }
+}
+
+  public isEditMode = false;
 
   ngOnInit() {
     this.taskService.getContactsRef().subscribe((contacts: ContactsInterface[]) => {
       this.ContactsList = contacts;
     });
 
+    // Beispiel: Setze Edit-Mode, wenn ein Task zum Bearbeiten übergeben wird
+    this.isEditMode = !!this.taskToEdit;
+
     if (this.isEditMode && this.taskToEdit) {
+      // Clear existing subtasks
+      const subtasksArray = this.form.get('subtasks') as FormArray;
+      subtasksArray.clear();
+      
+      // Add subtasks from taskToEdit
+      if (this.taskToEdit.subtasks && this.taskToEdit.subtasks.length > 0) {
+        this.taskToEdit.subtasks.forEach(subtask => {
+          subtasksArray.push(this.fb.control(subtask.title, Validators.required));
+        });
+      } else {
+        // Add at least one empty subtask
+        subtasksArray.push(this.fb.control('', Validators.required));
+      }
+
       this.form.patchValue({
         status: this.taskToEdit.status,
         title: this.taskToEdit.title,
@@ -57,7 +94,6 @@ form = this.fb.group({
         priority: this.taskToEdit.priority,
         assignedTo: this.taskToEdit.assignedTo,
         category: this.taskToEdit.category,
-        subtasks: this.taskToEdit.subtasks,
       });
     }
   }
@@ -94,14 +130,51 @@ form = this.fb.group({
     this.form.get('priority')?.setValue(priority);
   };
 
+  /**
+   * Generiert Initialen aus einem Namen
+   * @param name - Der vollständige Name
+   * @returns Die Initialen
+   */
+  getInitials(name: string): string {
+    return this.taskService.getInitials(name);
+  }
+
+  /**
+   * Generiert eine konsistente Farbe für einen Namen
+   * @param name - Der Name des Mitarbeiters
+   * @returns Eine Hex-Farbe
+   */
+  getColor(name: string): string {
+    return this.taskService.getColor(name);
+  }
+
+  /**
+   * Findet einen Kontakt anhand der ID
+   * @param contactId - Die ID des Kontakts
+   * @returns Der Kontakt oder undefined
+   */
+  getContactById(contactId: string): ContactsInterface | undefined {
+    return this.ContactsList.find(contact => contact.id === contactId);
+  }
+
   async submit() {
     const value = this.form.getRawValue();
+    
+    // Convert subtasks from string array to object array
+    const processedValue = {
+      ...value,
+      subtasks: value.subtasks?.filter((subtask: string) => subtask.trim() !== '')
+        .map((subtask: string) => ({
+          title: subtask,
+          done: false
+        })) || []
+    };
 
     if (this.isEditMode && this.taskToEdit?.id) {
-      await this.firebase.editTaskToDatabase(this.taskToEdit.id, value as TaskInterface);
+      await this.firebase.editTaskToDatabase(this.taskToEdit.id, processedValue as TaskInterface);
       this.success.show('Task updated');
     } else {
-      await this.firebase.addTaskToDatabase(value as TaskInterface);
+      await this.firebase.addTaskToDatabase(processedValue as TaskInterface);
       this.success.show('Task added');
     }
 
