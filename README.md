@@ -18,13 +18,13 @@
 
 ### Voraussetzungen
 
-- Node.js (≥ 14)  
+- Node.js (≥ 23)  
 - Git
 
 ### Lokale Entwicklung
 
 ```bash
-git clone https://github.com/Stack8871/Join.git
+git clone https://github.com/mideasdesign/join-app.git
 cd Join
 npm install
 npm run dev      # oder npm start
