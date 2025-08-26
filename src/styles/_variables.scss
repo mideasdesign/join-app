@@ -12,15 +12,16 @@ $breakpoint-sm: 480px;
 $breakpoint-md: 768px;
 $breakpoint-lg: 1024px;
 $breakpoint-xl: 1440px;
+
 $max-width: 1440px;
 
 // Farben
 // --------------------------------------------------
 
 $color-primary: #2a3647;
-$color-primary-dark: #1f2a3c;
+$color-primary-dark: #1f2a3c8e;
 $color-blue-dark: #091931;
-$color-gray: #CDCDCD;  
+$color-gray: #CDCDCD;
 $color-lighter-gray: #f6f7f8;
 $color-light-gray: #d2cfcf;
 $color-medium-gray: #a8a8a8;
@@ -29,13 +30,14 @@ $color-black: #000000;
 $color-border: $color-gray;
 
 // Akzentfarben (Prioritäten & Labels)
-$color-accent-urgent: #ff3d00;
+$color-accent-urgent: #ff0000;
 $color-accent-medium: #ffa800;
 $color-accent-low: #7ae229;
 $color-badge-userstory: #0038ff;
 $color-badge-technical: $color-medium-gray;
 $color-subtask-bar: #29abe2;
 $color-muted: #6b6b6b;
+$color-error: #ff3d00;
 
 // Hintergründe
 $color-bg-light: $color-lighter-gray;
@@ -45,6 +47,7 @@ $color-bg-overlay: rgba(0, 0, 0, 0.5);
 
 // Textfarben
 $color-text-heading: $color-black;
+$color-text-primary: $color-black;
 $color-text-muted: $color-muted;
 $color-text-subtask: $color-medium-gray;
 
@@ -72,3 +75,5 @@ $color-icon-muted: $color-muted;
 // Linkfarben (z. B. E-Mail)
 $color-link: #007cee;
 $color-link-hover: #003f8a;
+$color-text-secondary: $color-subtask-bar;
+$color-danger: #ff7a00;

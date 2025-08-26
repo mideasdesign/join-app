@@ -1,0 +1,92 @@
+@use 'index' as *;
+
+.mobile-welcome-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  @include center-column;
+  background: $color-white;
+  color: $color-primary;
+  opacity: 1;
+  transition: opacity 0.3s ease-out;
+
+  &.fade-out {
+    opacity: 0;
+  }
+}
+
+.welcome-content {
+  @include center-column;
+  gap: $spacing-3xl;
+  text-align: center;
+  padding: $spacing-3xl;
+  position: relative;
+  z-index: 2;
+}
+
+
+.greeting-section {
+  @include center-column;
+  gap: $spacing-sm;
+
+  .greeting-text {
+    font-size: var(--font-size-3xl);
+    font-weight: 300;
+    margin: 0;
+    color: $color-primary;
+  }
+
+  .user-name {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    margin: 0;
+    color: $color-primary;
+  }
+}
+
+
+.skip-button {
+  @include center-row-not-justify;
+  gap: $spacing-2xs;
+  background: rgba($color-primary, 0.1);
+  border: 1px solid rgba($color-primary, 0.3);
+  border-radius: 25px;
+  padding: $spacing-xs $spacing-base;
+  color: $color-primary;
+  font-size: var(--font-size-base);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: $spacing-xl;
+
+  &:hover {
+    background: rgba($color-primary, 0.2);
+    transform: translateY(-2px);
+  }
+
+  svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+
+
+// Responsive Design
+@media (max-width: 767px) {
+  .greeting-section {
+    .greeting-text {
+      font-size: var(--font-size-2xl);
+    }
+
+    .user-name {
+      font-size: var(--font-size-lg);
+    }
+  }
+
+  .skip-button {
+    margin-top: $spacing-lg;
+  }
+}

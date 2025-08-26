@@ -1,4 +1,11 @@
 @use 'index' as *;
+*{
+    word-wrap: break-word;
+/*     word-break: break-word; */
+    overflow-wrap: break-word;
+/*     max-width: 100%; */
+font-family: $font-family-base;
+}
 .wrapper {
   display:flex;
   flex-wrap: wrap;
@@ -20,12 +27,12 @@ header {
 .content-container{
   display: flex;
   flex-direction: column;
-  width:100svw;
+  width: 100svw;
 
 }
-@media (width > 860px){
+@media (width > 949px){
   .content-container{
-    width: calc(100% - 195px);
+    width: calc(100% - 232px);
   }
 }
 .content{

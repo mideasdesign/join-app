@@ -1,0 +1,77 @@
+<div class="single-wrapper" [class.hidden]="isLoading">
+      <header class="flex center-row">
+        <div class="flex header-content">
+          <div>
+              <img class="img-start" src="icons/join-logo.svg" alt="">
+          </div>
+          <div class="signup-desktop">
+            <span>Not a Join user yet?</span>
+            <button class="btn primary" routerLink="/sign-up">Sign up</button>
+          </div>
+      </div>
+    </header>
+
+  <main class="login-container">
+    <div class="login-content" [class.hidden]="!showLoginCard">
+      <div class="card login-card big-border-radius">
+        <h1 class="margin-bottom subline">Log in</h1>
+        <form class="flex form-container" (ngSubmit)="login()" #loginForm="ngForm">
+          <div class="input-group justify-end">
+            <input
+              type="email"
+              placeholder="E-Mail"
+              name="email"
+              [(ngModel)]="email"
+              required
+              email
+              #emailInput="ngModel"
+              [class.invalid-input]="emailInput.invalid && (emailInput.dirty || emailInput.touched)"
+            />
+            <img src="/icons/mail.svg" alt="person" />
+          </div>
+          @if (emailInput.invalid && (emailInput.dirty || emailInput.touched)) {
+          <div class="validation-message">
+            @if (emailInput.errors?.['required']) {<span>Email is required.</span>}
+            @if (emailInput.errors?.['email']) {<span>Please enter a valid email address.</span>}
+          </div>
+          }
+          <div class="input-group justify-end">
+            <input
+              type="password"
+              placeholder="Enter your Password"
+              name="password"
+              [(ngModel)]="password"
+              required
+              #passwordInput="ngModel"
+              [class.invalid-input]="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)"
+            />
+            <img src="/icons/lock.svg" alt="person" />
+          </div>
+          @if (passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)) {
+          <div class="validation-message">
+            @if (passwordInput.errors?.['required']) {<span>Password is required.</span>}
+          </div>
+          }
+          @if (errorMessage) {
+            <div class="error-message">
+              {{ errorMessage }}
+            </div>
+          }
+          <div class="button-group justify-center">
+            <button type="submit" class="btn create-btn" [disabled]="loginForm.invalid">Log in</button>
+            <button type="button" class="btn cancel-btn" (click)="guestLogin()">Guest Log in</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="signup-mobile">
+      <span>Not a Join user yet?</span>
+      <button class="btn primary" routerLink="/sign-up">Sign up</button>
+    </div>
+  </main>
+  <footer class="flex center-row">
+    <div class="footer-content">
+      <a routerLink="/privacy">Privacy Policy</a> <a routerLink="/imprint">Imprint</a>
+    </div>
+  </footer>
+</div>

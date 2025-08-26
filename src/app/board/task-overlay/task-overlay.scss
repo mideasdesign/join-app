@@ -1,179 +1,456 @@
-@use 'index' as *;
-.overlay-container {
-      display: flex;
-      max-width: 100svw;
-      background: transparent;
-     border-radius: 10px;
-      overflow: hidden;
-      @media (width < 769px){
-      max-height:90svh;
-      }
-    }
+@use "index" as *;
+@use "base";
 
-.form-slide{
-  animation: slideInFromRight 0.3s ease-out forwards;
-  @keyframes slideInFromRight {
-    0% {
-      transform: translateX(100%);
+
+.left-side{
+ display:flex;
+ flex-direction: column;
+ @media (width < 850px){
+   width: 100%;
+ }
+
+}
+.right-side{
+ display:flex;
+ flex-direction: column;
+ gap:$spacing-base;
+
+ @media (width < 850px){
+   width: 100%;
+ }
+
+}
+  label {
+    font-size: var(--font-size-base);
+    color: $color-text-heading;
+    width: 100%;
+    margin-bottom:$spacing-xs;
+  }
+  .validation-message {
+    color: #ff0000;
+    font-size: var(--font-size-base);
+    margin-top: 4px;
+  }
+
+.input-group {
+  display: block;
+  & label {
+    display: block;
+  }
+  &select{
+    display: block;
+    width:400px;
+  }
+}
+.date-input {
+  position: relative;
+  input {
+    padding-right: 20px;
+    color: $color-text-heading;
+    cursor: pointer;
+    background-color: $color-white;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    &::-webkit-calendar-picker-indicator {
+      cursor: pointer;
     }
-    100% {
-      transform: translateX(0);
+    &::-ms-clear {
+      display: none;
+    }
+    &:hover {
+      border-color: $color-primary-dark;
+    }
+    &:focus {
+      border-color: $color-primary;
+      box-shadow: 0 0 0 2px rgba(41, 171, 226, 0.2);
+    }
+    &::placeholder {
+      color: $color-placeholder;
+      font-family: $font-family-base;
+      font-size: var(--font-size-base);
     }
   }
 }
+img {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
 
-.subheadline {
+}
+.task-container{
+    max-width: 900px;
+    width: 90svw;
+    padding: 3%;
+    min-height: 40svh;
+  @media(width < 860px){
+    width: 89svw;
+    padding: 7%;
+    height:90svh;
+  }
+}
+.task-content{
+  overflow: auto;
+  height:100%;
+}
+  .task-heading{
+    padding-bottom:3%;
+  }
+.priority-icon {
+  margin-left:$spacing-sm;
+  padding-top:2px;
+}
+.button-group {
+  margin-top: $spacing-base;
+
+  .submit-btn {
+    padding: 12px 24px;
+    background-color: $color-primary;
+    color: $color-white;
+    border: none;
+    border-radius: 8px;
+    font-size: var(--font-size-base);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: $color-primary-dark;
+      box-shadow: $card-shadow;
+    }
+  }
+}
+.subtasks-container{
+  max-height:120px;
+  overflow:auto;
+}
+.subtasks{
+  border: 1px solid $color-light-gray;
+  border-radius: $spacing-xs;
+  background:$color-white;
+  display:flex;
+  & input{
+/*     max-width:390px; */
+    border:0px solid transparent;
+  }
+  & button{
+    border: 0px solid  transparent;
+    margin-left:1rem;
+    background:$color-white;
+    color: $color-medium-gray;
+    &:hover{
+      color:$color-primary;
+      font-size: var(--font-size-base);
+      cursor: pointer;
+    }
+  }
+}
+.plus-icon, .minus-icon{
+  font-size: var(--font-size-base);
+  margin:0;
+  padding-right: 5%;
+}
+
+select {
+  font: inherit;
+  line-height: 1.5em;
+  padding: $spacing-xs $spacing-xl $spacing-xs $spacing-xs;
+  appearance: none;
+  -moz-appearance: none;
+  border-radius: $spacing-xs;
+  border:1px solid $color-light-gray;
+}
+
+select.minimal {
+  display: inline-block;
+  appearance: none;
+  outline: none;
+  box-shadow: none;
+  cursor: pointer;
+  height: 100%;
+  font-size: var(--font-size-base);
+  background: none; // Entferne das alte CSS-Arrow
+  width: 100%;
+  padding-right: 40px; // Platz für das SVG-Arrow
+}
+
+select.minimal:focus {
+  border-color: $color-light-gray;
+  outline: 0;
+}
+
+// Einheitliches Select-Container Styling
+.select-wrapper {
   position: relative;
   display: inline-block;
+  width: 100%;
+
+  .select-arrow {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: $color-medium-gray;
+    transition: color 0.2s ease;
+
+    svg {
+      width: 14px;
+      height: 8px;
+    }
+  }
+
+  select:focus + .select-arrow {
+    color: $color-primary;
+  }
+}
+
+// Category Option Styling (ähnlich wie Contact Option)
+.category-option {
+  display: flex;
+  align-items: center;
+  padding: $spacing-xs $spacing-sm;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(42, 54, 71, 0.05);
+  }
+
+  &.selected {
+    background-color: rgba(42, 54, 71, 0.1);
+    font-weight: 500;
+  }
+
+  span {
+    font-size: var(--font-size-base);
+    color: $color-text-primary;
+  }
+}
+
+.contact-option-content {
+  display: flex;
+  align-items: center;
+  gap: $spacing-xs;
+  flex: 1;
+}
+
+.circle-small {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: var(--font-size-base);
+  flex-shrink: 0;
+}
+
+.contact-name {
+  font-size: var(--font-size-base);
+  color: $color-text-primary;
+}
+
+.checkbox-indicator {
+  color: $color-primary;
+  font-weight: bold;
+  font-size: 16px;
+}
+/* Multiselect: Zeilenhöhe und Scrollbar */
+select.minimal[multiple] {
+  height: 120px; /* Feste Höhe statt 100% */
+  overflow-y: auto;
+  /*background-image: none;  Entfernt den Dropdown-Pfeil bei Multiselect */
+
+
+}
+/* Option-Styles */
+select.minimal option {
+  padding: 12px 16px;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.6;
+  position: relative;
+  background: $color-white;
+  color: $color-text-heading;
+  border: none;
+
+  /* Styling für bessere Lesbarkeit */
+  &:checked {
+    background: $color-primary !important;
+    color: white !important;
+    font-weight: 500;
+  }
+
+  &:hover:not(:checked) {
+    background: #f0f0f0 !important;
+    color: $color-text-heading !important;
+  }
+}
+
+/* Multi-Select Styling für bessere Darstellung */
+select.minimal[multiple] option {
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
 
   &::before {
-    content: "";
-    position: absolute;
-    bottom: -8px; // Abstand zur Schrift
-    left: 0;
-    width: 25%;
-    border-bottom: 3px solid $color-subtask-bar;
+    content: '';
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 8px;
+    flex-shrink: 0;
+    background: var(--contact-color, #ccc);
+    color: white;
+    text-align: center;
+    line-height: 24px;
+    font-size: 10px;
+    font-weight: 600;
   }
 }
-.card-wrapper {
-  flex-direction: row;
-  position: relative;
-  @include center;
-  width: 100%;
-  max-width: 1220px;
-@media(width < 769px){
-  flex-direction: column;
+/* Optional: Hover- und Selected-Effekt */
+select.minimal option:checked,
+select.minimal option:hover {
+  background: #e0e7ff;
+  color: #222;
+}
+select:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 #000;
 }
 
-  &.mobile {
-    flex-direction: column;
-    width: 80vw;
-    height: 80svh;
-    margin: 0 auto;
-    border-radius: 0;
+/* Assigned Contacts Display Styles */
+.assigned-contacts-display {
+  margin-top: 12px;
+
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    color: $color-text-heading;
+    display: block;
   }
-}
-.left-container {
-  position: relative;
-  flex:43%;
-  background-color: $color-primary;
-    @include center;
-    height: 100%;
-    padding:3rem;
-@media(width < 769px){
-  flex:1;
-  width:100%;
-  padding: 2rem 0 4rem 0;
-}
-}
-.left-content {
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  flex-wrap: wrap;
-  gap: $spacing-md;
-  height:100%;
-  padding:3rem 0;
-  @media(width < 769px){
-    padding:0 2rem;
-  }
-  .underline {
-    position: relative;
-    bottom: 3px;
-    left: 0;
-    width: 90px;
-    height: 3px;
 
-    &.mobile {
-      margin-top: 10px;
-    }
-  }
-  .logo-White {
-    position: relative;
-    max-width: 4.2rem;
-    max-height: 4.2rem;
+  .contacts-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
 
-    @media(width < 769px){
-      margin-top:0;
-    }
-    &.mobile {
-      display: none;
-       }
-  }; 
-  h2 {
-    color: $color-white;
-    font-size: var(--font-size-2xl);
-  }
-  h3 {
-    color: $color-white;
-    font-size: var(--font-size-md);
-    font-weight: 300;
-  }
-}
-.right-container {
-  flex: 57%;
-  position: relative;
-  background-color: $color-white;
-  @include center;
-  height: 100%;
-
-@media(width < 769px){
-  flex:1;
-  width:100%;
-}
-
-  .right-content {
-  position: relative;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  flex: 1;
-
-    &.mobile {
-      display: block;
-      left: 0;
-    }
-    .contact-form {
-      @include center-row-not-justify;
-      flex:1;
-      padding: 2rem;
-      @media (width < 769px){
-        flex-direction: column;
-      }
-      .contact-avatar {
-        position:absolute;
-        left:38%;
-        top:-10%;
-        z-index:100;
-        @include center;
-        width: 80px;
-        height: 80px;
-        background-color: $color-light-gray;
+    .contact-item-display {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      .circle {
+        width: 32px;
+        height: 32px;
         border-radius: 50%;
-        img {
-          min-width: 30px;
-          min-height: 30px;
-          width: 58%;
-          height: 58%;
-        }
-        @media (width > 770px){
-          position:relative;
-          left: 0;
-          top: 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 120px;
-          height: 120px;
-          z-index:1;
-          margin-right: 3rem;
-
-        }
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 500;
+        font-size: 12px;
+        flex-shrink: 0;
       }
-      form {
-        @include center-column;
-        flex:1;
+
+      .contact-name {
+        font-size: 14px;
+        color:$color-medium-gray;
+        font-weight: 400;
       }
     }
   }
+}
+.horizontal-line{
+  border-right: 1px solid $color-light-gray;
+  @media (width < 769px) {
+    display:none;
+  }
+}
+
+
+/* Subtasks List Display (overlay) */
+.subtasks-list-display {
+  margin-top: 12px;
+  .subtasks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-width: 440px;
+    margin-top: 8px;
+    max-height: 96px; /* fits ~2 items + gap; from 3+ enable inner scroll */
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding-right: 4px; /* prevent content under scrollbar */
+  }
+  .subtask-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    &:hover {
+      background-color: #f0f0f0;
+    }
+  }
+  .subtask-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    max-width: calc(100% - 30px);
+  }
+  .subtask-bullet {
+    color: $color-primary;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .subtask-text {
+    font-size: 14px;
+    color: $color-text-primary;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .subtask-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .subtask-item:hover .subtask-actions {
+    opacity: 1;
+  }
+  .action-icon {
+    cursor: pointer;
+    color: $color-medium-gray;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+      color: $color-primary;
+    }
+    svg {
+      fill: currentColor;
+    }
+  }
+}
+
+/* Keep the add-subtask input visible at top while list scrolls */
+.subtasks.add-subtask {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: $color-white;
+  padding: 0.1rem;
 }

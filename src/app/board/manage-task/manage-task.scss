@@ -1,51 +1,45 @@
-
 @use 'index' as *;
-.flex{
-  display: flex;
-}
-.column{
-  flex-direction: column;
-}
-.space-between{
-  justify-content:space-between;
-}
-.container{
-  margin:$spacing-3xl;
-  display: flex;
-  justify-content: center;
-  flex-direction: column;
-  max-width: 1440px;
-}
+// Board-specific styles only
 .header-section{
-  display: flex;
-  justify-content: space-between;
+  @include space; // Using mixin instead of duplicating flex + space-between
   margin-bottom: $spacing-5xl;
   flex-wrap:wrap;
-  align-items: center;
 }
 .grid-board{
-  display:grid;
-  gap: 1.5rem;
-  grid-template-columns: repeat(auto-fill, minmax(13rem, 1fr));
-  width: 75svw;
-  max-width:1100px;
+    display: grid;
+    gap: 3rem;
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
+    max-width: 1440px;
 }
 .card{
   border-radius: $card-radius;
-  padding: $card-padding;
+  padding: $small-card-padding;
   box-shadow: $card-shadow;
   background: $color-bg-card;
   gap: $spacing-sm;
   margin:$spacing-sm 0;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
-
-/* Add cursor pointer and hover effect for draggable cards */
-.card[cdkDrag] {
+.add-task-btn{
+  display:inline-block;
+ width:80px;
+}
+@media ( width < 720px){
+  .add-task-btn{
+      display:none;
+  }
+}
+.add-task-plus{
+  padding: 0;
+}
+/* Make cards clickable (after removing drag & drop) */
+.card {
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-
-.card[cdkDrag]:hover {
+.card:hover {
   transform: scale(1.02);
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }
@@ -53,31 +47,247 @@ h4{
   color:$color-primary;
   font-size: var(--font-size-base);
 }
+.task-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+  h4 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
 .description{
   color:$color-gray;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 .subtask-progress{
   align-items: center;
   gap: $spacing-xs;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
+
+// Mobile Task Slider
+@media (width < 768px) {
+  .container {
+    /* Add space for fixed bottom mobile nav so last column isn't overlapped */
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .grid-board {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .column {
+    position: relative;
+  }
+
+  .drop-list {
+    position: relative;
+    overflow: hidden;
+  }
+
+  // Desktop task list becomes horizontal slider on mobile
+  .desktop-task-list {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    gap: $spacing-sm;
+    padding: 0 $spacing-sm;
+    scroll-behavior: smooth;
+    
+    // Enable touch scrolling
+    -webkit-overflow-scrolling: touch;
+    
+    // Hide scrollbar
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .desktop-task-list .card {
+    flex: 0 0 250px; // Fixed width for each card
+    margin: 0;
+    scroll-snap-align: start;
+  }
+
+  // Remove mobile slider since we're using desktop list
+  .mobile-task-slider {
+    display: none;
+  }
+
+  // Show mobile dot navigation only on small screens
+  .mobile-dot-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: $spacing-sm;
+    padding: $spacing-xs 0;
+  }
+
+  .slider-dots {
+    display: flex;
+    gap: $spacing-xs;
+  }
+
+  .slider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $color-light-gray;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &.active {
+      background: $color-primary;
+      transform: scale(1.2);
+    }
+
+    &:hover {
+      background: $color-medium-gray;
+    }
+  }
+
+  .slider-navigation {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: $spacing-sm;
+    margin-top: $spacing-sm;
+    padding: $spacing-xs 0;
+  }
+
+  .slider-arrow {
+    background: $color-primary;
+    color: $color-white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: $color-primary-dark;
+      transform: scale(1.1);
+    }
+
+    &:disabled {
+      background: $color-light-gray;
+      color: $color-medium-gray;
+      cursor: not-allowed;
+      transform: none;
+      opacity: 0.6;
+    }
+  }
+
+  .slider-dots {
+    display: flex;
+    gap: $spacing-xs;
+  }
+
+  .slider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $color-light-gray;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &.active {
+      background: $color-primary;
+    }
+
+    &:hover {
+      background: $color-primary-dark;
+    }
+  }
+
+  .column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: $spacing-sm;
+
+    h4 {
+      margin: 0;
+    }
+  }
+
+  .task-counter {
+    color: $color-medium-gray;
+    font-size: var(--font-size-base);
+    font-weight: normal;
+  }
+}
+
+// Desktop: Hide mobile elements
+@media (width >= 768px) {
+  .mobile-task-slider {
+    display: none;
+  }
+
+  .slider-navigation {
+    display: none;
+  }
+
+  .mobile-dot-navigation {
+    display: none;
+  }
+
+  .desktop-task-list {
+    display: block;
+  }
+
+  .task-counter {
+    display: none;
+  }
+}
+
 .category{
   border-radius: $card-radius;
   padding: $spacing-2xs;
-  background:$color-badge-userstory;
-  font-size: var(--font-size-sm);
-  color:$color-lighter-gray;
+  font-size: var(--font-size-base);
+  color:$color-white;
+  font-weight: 500;
+  display: inline-block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+// Dynamic category colors
+.category-userstory {
+  background-color: $color-badge-userstory;
+}
+.category-technical {
+  background-color: $color-badge-technical;
+}
+
+.category-default {
+  background-color: $color-primary;
 }
 .user-story-clr{
     background:$color-badge-userstory;
 }
-.tecnical-clr{
+.technical-clr{
     background:$color-medium-gray;
-}
-.blue{
-    background: $color-avatar-3;
-}
-.red{
-    background: $color-accent-urgent;
 }
 .position-absolute{
     position: absolute;
@@ -96,7 +306,7 @@ h4{
     margin-left: -37px;
 }
 .search-container{
-    display: flex;
+    @include center-row-not-justify;
     gap:$spacing-base;
     align-items: end;
 }
@@ -112,41 +322,12 @@ h4{
    }
 }
 .input-search{
-  display: flex;
-  align-items: center;
+  @include center-row-not-justify;
 }
-.cdk-drag-preview {
-  box-sizing: border-box;
-  border-radius: 4px;
-  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2), 0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
-  transform: rotate(3deg);
-  cursor: grabbing;
-}
-
-.cdk-drag-animating {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.example-box:last-child {
-  border: none;
-}
-
-.example-list.cdk-drop-list-dragging .example-box:not(.cdk-drag-placeholder) {
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.example-custom-placeholder {
-  background: #ccc;
-  border: dotted 3px #999;
-  min-height: 60px;
-  transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-
 .drop-list {
   min-height: 100px;
   padding: 10px 0;
 }
-
 .empty-column-message {
   text-align: center;
   padding: 20px;
@@ -155,29 +336,24 @@ h4{
   color: $color-gray;
   background-color: rgba(0, 0, 0, 0.03);
   margin: 10px 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-height: 250px;
+  @include center-column;
 }
-/*
-.task-detail-title{
-    font-size: var(--font-size-2xl);
+.no-tasks-found-message {
+  color: $color-primary;
+  text-align: center;
+  padding: $spacing-lg;
+  margin-top: $spacing-lg;
+  background-color: $color-bg-card;
+  border-radius: $card-radius;
+  box-shadow: $card-shadow;
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  p {
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+  }
 }
-.overlay{
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100svh;
-  width: 100%;
-  background-color: #242424b6;
-  z-index:9999;
-  @include center;
-}
- .task-detail-card{
-    max-width: 550px;
-    margin:0 $spacing-base;
-} */
   .assigned-to{
     align-items: center;
     margin-bottom: $spacing-base;
@@ -188,12 +364,11 @@ h4{
     margin-right:$spacing-xs;
   }
   .edit-delete-section{
-    display: flex;
+    @include center;
     justify-content: flex-end;
   }
   .edit-delete{
-    display: flex;
-    align-items: center;
+    @include center-row-not-justify;
     height: 24px;
     margin: 0 $spacing-xs;
     gap: $spacing-2xs;
@@ -204,3 +379,159 @@ h4{
   .rounded{
     border-radius: 50%;
   }
+  // Contact initials styling for task cards
+  .assigned-contacts {
+    gap: 4px;
+    @include center-row-not-justify;
+    overflow: hidden;
+    max-width: 100%;
+    flex-wrap: nowrap;
+  }
+  .circle-initials {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: $color-white;
+    @include center;
+    font-weight: 600;
+    font-size: 12px;
+    flex-shrink: 0;
+    box-shadow: $card-shadow;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    border: 2px solid $color-white;
+  }
+  .circle-initials:not(:first-child) {
+    margin-left: -13px;
+  }
+  .priority-indicator {
+    font-size: 12px;
+    font-weight: 500;
+    color: $color-primary;
+    @include center-row-not-justify;
+    gap: 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  .priority-icon-small {
+    width: 16px;
+    height: 16px;
+    object-fit: contain;
+  }
+  /* Highlight animation for tasks */
+  @keyframes task-highlight {
+    0% {
+      box-shadow: 0 0 0 0 rgba(42, 54, 71, 0.4);
+      transform: scale(1);
+    }
+    50% {
+      box-shadow: 0 0 0 10px rgba(42, 54, 71, 0);
+      transform: scale(1.05);
+      background-color: rgba(42, 54, 71, 0.1);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(42, 54, 71, 0);
+      transform: scale(1);
+    }
+  }
+  .highlight-task {
+    animation: task-highlight 2s ease-in-out;
+  }
+
+/* Drag & Drop visual feedback */
+.cdk-drag-preview {
+  box-shadow: $card-shadow;
+  border-radius: $card-radius;
+}
+.cdk-drag-placeholder {
+  border: 2px dashed $color-light-gray;
+  border-radius: $card-radius;
+  background: rgba(42, 54, 71, 0.04);
+  min-height: 72px;
+  margin: $spacing-sm 0;
+}
+.cdk-drag-placeholder > * {
+  opacity: 0;
+}
+
+/* Ensure single indicator in empty columns while dragging */
+.empty-column-message.cdk-drop-list-dragging {
+  border-color: transparent;
+  background: transparent;
+  color: transparent;
+}
+
+/* Mobile Task List Styles */
+@media (width < 768px) {
+  .desktop-task-list {
+    display: none;
+  }
+
+  .mobile-task-list {
+    display: flex;
+    overflow-x: auto;
+    overflow-y: hidden;
+    gap: $spacing-sm;
+    padding: $spacing-xs 0;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    
+    /* Hide scrollbar */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+    
+    &::-webkit-scrollbar {
+      display: none; /* Chrome, Safari, Opera */
+    }
+  }
+
+  .mobile-task-card {
+    flex: 0 0 auto;
+    min-width: 250px;
+    max-width: 280px;
+    scroll-snap-align: start;
+  }
+
+  .mobile-dot-navigation {
+    display: flex;
+    justify-content: center;
+    margin-top: $spacing-sm;
+  }
+
+  .slider-dots {
+    display: flex;
+    gap: $spacing-xs;
+  }
+
+  .slider-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: $color-light-gray;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &.active {
+      background: $color-primary;
+      transform: scale(1.2);
+    }
+
+    &:hover {
+      background: $color-medium-gray;
+    }
+  }
+}
+
+/* Desktop: Hide mobile elements */
+@media (width >= 768px) {
+  .mobile-task-list {
+    display: none;
+  }
+
+  .mobile-dot-navigation {
+    display: none;
+  }
+}
