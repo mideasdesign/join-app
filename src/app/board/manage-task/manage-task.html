@@ -7,15 +7,15 @@
           <div class="input-search">
               <input type="text" placeholder="Name" [(ngModel)]="searchTerm" (ngModelChange)="applyFilter($event)" name="searchInput">
               <button class="magnifyin-glass">
-                <img src="/icons/magnifyin-glass.svg" alt="person" />
+                <img src="icons/magnifyin-glass.svg" alt="person" />
               </button>
               <div  class="validation-message">
               </div>
           </div>
       </form>
       <div>
-        <button class="btn primary" (click)="addNewTask()">
-          + Add task
+        <button class="btn primary flex" (click)="addNewTask()">
+          <span class="add-task-btn">Add task</span> &nbsp;<span class="add-task-plus"> +</span>
         </button>
       </div>
   </div>
@@ -23,55 +23,133 @@
   <div class="grid-board">
     @for (col of filteredColumns; track col.id) {
     <div class="column">
-        <div class="flex space-between">
-          <h4>{{ col.title }}</h4> <button class=" add-icon"(click)="addNewTask()">+</button></div>
+        <div class="column-header">
+          <div class="flex space-between" style="width: 100%;">
+            <h4>{{ col.title }}</h4>
+            <span class="task-counter">{{ col.tasks.length }} tasks</span>
+            <button class="add-icon" (click)="addNewTask()">+</button>
+          </div>
+        </div>
         <div
-          cdkDropList
-          [cdkDropListData]="col.tasks"
-          [cdkDropListConnectedTo]="connectedDropLists"
           class="drop-list"
-          (cdkDropListDropped)="drop($event)"
           [id]="col.id"
           >
           @if (col.tasks.length === 0) {
-          <div class="empty-column-message">
-            No tasks yet. Drag tasks here.
+          <div class="empty-column-message"
+               cdkDropList
+               [id]="col.id + '-list'"
+               [cdkDropListData]="col.tasks"
+               [cdkDropListConnectedTo]="dropListIds"
+               [cdkDropListDisabled]="!canEditTask"
+               (cdkDropListDropped)="onDrop($event, col.id)">
+            No tasks yet.
           </div>
-          }
-          @for (task of col.tasks; track task.id) {
-          <div class="card flex column" cdkDrag (click)="selectTask(task)">
-            <div class="example-custom-placeholder" *cdkDragPlaceholder></div>
-            <div class=""><span class="category" [ngClass]="getCategoryClass(task.category)"> {{ task.category }}</span></div>
-            <div class="task-title"><h4> {{ task.title }}</h4></div>
-            <div class="description">{{ task.description }}</div>
-            @if (task.subtasks && task.subtasks.length > 0) {
-              <mat-progress-bar mode="determinate" [value]="getSubtaskProgress(task)"></mat-progress-bar>
-              <div class="flex subtask-progress">
-                <span>{{ getCompletedSubtasks(task) }}/{{ task.subtasks.length }} Subtasks</span>
-              </div>
-            }
-            <div class="flex space-between align-center">
-                <div class="flex assigned-contacts">
-                    @for (contactId of task.assignedTo; track contactId) {
-                      <div class="circle-initials" [style.backgroundColor]="getColor(getContactName(contactId))">
-                        {{ getInitials(getContactName(contactId)) }}
-                      </div>
-                    }
-              </div>
-              <div class="priority-indicator">
-                <span>{{ task.priority }}</span>
-                <img [src]="getPriorityIcon(task.priority)" [alt]="task.priority + ' priority'" class="priority-icon-small">
+          } @else {
+          <!-- Desktop: Vertical Layout -->
+          <div class="desktop-task-list"
+               cdkDropList
+               [id]="col.id + '-list'"
+               [cdkDropListData]="col.tasks"
+               [cdkDropListConnectedTo]="dropListIds"
+               [cdkDropListDisabled]="!canEditTask"
+               (cdkDropListDropped)="onDrop($event, col.id)">
+            @for (task of col.tasks; track task.id) {
+            <div class="card flex column" cdkDrag [cdkDragDisabled]="!canEditTask" [cdkDragData]="task" (cdkDragStarted)="isDragging=true" (cdkDragEnded)="isDragging=false" (click)="!isDragging && selectTask(task)" [id]="'task-' + task.id">
+              <div class=""><span class="category" [ngClass]="getCategoryClass(task.category)"> {{ truncateText(task.category) }}</span></div>
+              <div class="task-title"><h4> {{ truncateText(task.title) }}</h4></div>
+              <div class="description">{{ truncateText(task.description) }}</div>
+              @if (task.subtasks && task.subtasks.length > 0) {
+                <div class="progress-bar-container">
+                  <div class="progress-bar" [style.width.%]="getSubtaskProgress(task)"></div>
+                </div>
+                <div class="flex subtask-progress">
+                  <span>{{ getCompletedSubtasks(task) }}/{{ task.subtasks.length }} Subtasks</span>
+                </div>
+              }
+              <div class="flex space-between align-center">
+                  <div class="flex assigned-contacts">
+                      @for (contactId of limitArray(task.assignedTo); track contactId; let i = $index) {
+                        <div class="circle-initials" [style.backgroundColor]="getColor(getContactName(contactId + ''))">
+                          {{ getInitials(getContactName(contactId + '')) }}
+                        </div>
+                      }
+                </div>
+                <div class="priority-indicator">
+                  <span>{{ task.priority }}</span>
+                  <img [src]="getPriorityIcon(task.priority)" [alt]="task.priority + ' priority'" class="priority-icon-small">
+                </div>
               </div>
             </div>
+            }
           </div>
+
+          <!-- Mobile: Horizontal Scrollable Layout -->
+          <div class="mobile-task-list"
+               cdkDropList
+               [id]="col.id + '-mobile-list'"
+               [cdkDropListData]="col.tasks"
+               [cdkDropListConnectedTo]="dropListIds"
+               [cdkDropListDisabled]="!canEditTask"
+               (cdkDropListDropped)="onDrop($event, col.id)"
+               cdkDropListOrientation="horizontal">
+            @for (task of col.tasks; track task.id) {
+            <div class="card flex column mobile-task-card" cdkDrag [cdkDragDisabled]="!canEditTask" [cdkDragData]="task" (cdkDragStarted)="isDragging=true" (cdkDragEnded)="isDragging=false" (click)="!isDragging && selectTask(task)" [id]="'mobile-task-' + task.id">
+              <div class=""><span class="category" [ngClass]="getCategoryClass(task.category)"> {{ truncateText(task.category) }}</span></div>
+              <div class="task-title"><h4> {{ truncateText(task.title) }}</h4></div>
+              <div class="description">{{ truncateText(task.description) }}</div>
+              @if (task.subtasks && task.subtasks.length > 0) {
+                <div class="progress-bar-container">
+                  <div class="progress-bar" [style.width.%]="getSubtaskProgress(task)"></div>
+                </div>
+                <div class="flex subtask-progress">
+                  <span>{{ getCompletedSubtasks(task) }}/{{ task.subtasks.length }} Subtasks</span>
+                </div>
+              }
+              <div class="flex space-between align-center">
+                  <div class="flex assigned-contacts">
+                      @for (contactId of limitArray(task.assignedTo); track contactId; let i = $index) {
+                        <div class="circle-initials" [style.backgroundColor]="getColor(getContactName(contactId + ''))">
+                          {{ getInitials(getContactName(contactId + '')) }}
+                        </div>
+                      }
+                </div>
+                <div class="priority-indicator">
+                  <span>{{ task.priority }}</span>
+                  <img [src]="getPriorityIcon(task.priority)" [alt]="task.priority + ' priority'" class="priority-icon-small">
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+
+          <!-- Mobile Navigation Dots (only show on mobile and when multiple tasks) -->
+          @if (col.tasks.length > 1) {
+          <div class="mobile-dot-navigation">
+            <div class="slider-dots">
+              @for (task of col.tasks; track $index) {
+              <div class="slider-dot"
+                   [class.active]="getCurrentVisibleTaskIndex(col.id) === $index"
+                   (click)="scrollToTask(col.id, $index)">
+              </div>
+              }
+            </div>
+          </div>
+          }
           }
         </div>
     </div>
     }
   </div>
-  
+
+  @if (noTasksFound && searchTerm.trim() !== '') {
+    <div class="no-tasks-found-message">
+      <p>No tasks found with the search term "{{ searchTerm }}"</p>
+    </div>
+  }
+
   @if (isSelected && selectedTask) {
     <div class="overlay">
       <app-task-detail [selectedTask]="selectedTask" (close)="closeOverlay()"></app-task-detail>
     </div>
   }
+</div>

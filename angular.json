@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "store-new": {
+    "Join": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -26,28 +26,55 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public"
+                "input": "public/icons",
+                "output": "icons"
+              },
+              {
+                "glob": "**/*",
+                "input": "public/icons-white",
+                "output": "icons-white"
+              },
+              {
+                "glob": "**/*",
+                "input": "public/font",
+                "output": "/font"
+              },
+              {
+                "glob": "**/*",
+                "input": "public/img",
+                "output": "img"
+              },
+              {
+                "glob": "*",
+                "input": "public",
+                "output": "/"
               }
             ],
             "styles": [
               "src/styles.scss"
             ],
-              "stylePreprocessorOptions": {
+            "stylePreprocessorOptions": {
               "includePaths": ["src/styles"]
             }
           },
           "configurations": {
             "production": {
-              "budgets": [
+              "baseHref": "/",
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.prod.ts"
+                }
+              ],"budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kB",
-                  "maximumError": "1MB"
+                  "maximumWarning": "3MB",
+                  "maximumError": "2.5MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "4kB",
-                  "maximumError": "8kB"
+                  "maximumWarning": "600kB",
+                  "maximumError": "599kB"
                 }
               ],
               "outputHashing": "all"
@@ -64,10 +91,10 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "store-new:build:production"
+              "buildTarget": "Join:build:production"
             },
             "development": {
-              "buildTarget": "store-new:build:development"
+              "buildTarget": "Join:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -93,12 +120,15 @@
             "styles": [
               "src/styles.scss"
             ],
-              "stylePreprocessorOptions": {
+            "stylePreprocessorOptions": {
               "includePaths": ["src/styles"]
             }
           }
         }
       }
     }
+  },
+  "cli": {
+    "analytics": false
   }
 }

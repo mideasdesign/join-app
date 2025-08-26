@@ -5,7 +5,7 @@ import {
   OverlayConfig,
 } from '@angular/cdk/overlay';
 import { ComponentPortal } from '@angular/cdk/portal';
-import { AddTask } from '../../../board/add-task/add-task';
+import { TaskOverlay } from '../../../board/task-overlay/task-overlay';
 import { TaskInterface } from '../../../interfaces/task-interface';
 
 @Injectable({ providedIn: 'root' })
@@ -14,6 +14,8 @@ export class TaskOverlayService {
   private overlay = inject(Overlay);
 
   openOverlay(taskToEdit?: TaskInterface) {
+    // Opening overlay with task to edit
+    
     const config = new OverlayConfig({
       hasBackdrop: true,
       backdropClass: 'cdk-overlay-dark-backdrop',
@@ -25,12 +27,15 @@ export class TaskOverlayService {
     });
 
     this.overlayRef = this.overlay.create(config);
-    const portal = new ComponentPortal(AddTask);
+    const portal = new ComponentPortal(TaskOverlay);
     const componentRef = this.overlayRef.attach(portal);
 
     // ❗ WICHTIG: Task übergeben, wenn Edit-Modus
     if (taskToEdit) {
+      // Setting task to edit on component instance
       componentRef.instance.taskToEdit = taskToEdit;
+      // Force change detection to ensure the component updates
+      componentRef.changeDetectorRef.detectChanges();
     }
 
     this.overlayRef.backdropClick().subscribe(() => this.close());

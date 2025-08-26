@@ -1,10 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 @use 'index' as *;
 
+
 body{
     font-family: $font-family-base;
     font-weight: 400;
     background:$color-lighter-gray;
+    text-wrap: balance;
+}
+
+// Material Components ohne Google Fonts überschreiben
+.mat-mdc-progress-bar {
+    font-family: $font-family-base !important;
+}
+
+.mat-typography {
+    font-family: $font-family-base !important;
 }
 a:hover{
       cursor: pointer;

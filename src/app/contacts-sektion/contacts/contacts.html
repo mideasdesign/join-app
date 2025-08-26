@@ -1,17 +1,18 @@
-<div class="contacts-page-container">
+<div class="contacts-page-container" [class.mobile]="breakpointHandler.isMobile()" [class.show-details]="showMobileDetails">
   <div class="contact-container">
+    @if (canCreateContact) {
     <button class="add-contact-btn" (click)="addNewContact()">
       <span>Add new contact</span>
-      <img src="/icons-white/person_add.svg" alt="check" class="new-contact-icon" />
+      <img src="/img/icons-white/person_add.svg" alt="check" class="new-contact-icon" />
     </button>
+    }
     @if (firebase.ContactsList.length > 0)
     {
     <div class="contact-list">
       @for ( letter of groupedKeys; track letter) {
       <div class="group-header">{{ letter }}</div>
-
       @for ( contact of groupedContacts[letter]; track contact.id; let i = $index) {
-      <div class="contact-item" (click)="selectedContacts(letter, i)">
+      <div class="contact-item" [ngClass]="{'selected': selectedContactsIndex === i && groupedContacts[letter][i].id === contactsId}" (click)="selectedContacts(letter, i)">
         <div class="circle" [style.backgroundColor]="getColor(contact.name)">
           {{ getInitials(contact.name) }}
         </div>
@@ -34,20 +35,20 @@
   </div>
   <section class="contacts-detail-container">
     <div class="back-btn">
-      <button>
+      <button (click)="goBackToList()">
         <img src="/icons/arrow-left.svg" alt="">
       </button>
     </div>
     <div class="contacts-info-container">
       <h1>Contacts</h1>
-      <span class="line-seperator">&nbsp;</span>
-      <h3 class="underline">Better with a team</h3>
+      <span class="line-separator">&nbsp;</span>
+      <h3>Better with a team</h3>
     </div>
     @if (selectedContactsIndex !== null) {
       <div class="form-slide column">
         <div class="contacts-detail">
           <div class="contact-detail-header flex ai-center">
-            <div class="circle-initial">
+            <div class="circle-initial-contact">
               <div class="circle-size-big" [style.backgroundColor]="getColor(selectedContact.name)">
                 {{ getInitials(selectedContact.name) }}
               </div>
@@ -61,7 +62,8 @@
                   </span>
                 }
               </h2>
-              <div class="button-group">
+              <div class="edit-group">
+                @if (canEditContact) {
                 <div class="iconsbefore edit" (click)="editContact(selectedContact)">
                   <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" class="icon-edit" viewBox="0 0 19 19"
                     fill="none">
@@ -70,6 +72,8 @@
                   </svg>
                   <h4>Edit</h4>
                 </div>
+                }
+                @if (canDeleteContact) {
                 <div class="iconsbefore delete" (click)="promptDelete(selectedContact.id!)">
                   <svg xmlns="http://www.w3.org/2000/svg" width="17" height="18" class="icon-edit" viewBox="0 0 17 18">
                     <path
@@ -77,16 +81,17 @@
                   </svg>
                   <h4>Delete</h4>
                 </div>
+                }
               </div>
-            </div> 
-          </div>       
+            </div>
+          </div>
           <div class="contacts-information">
             <h3>Contact Information</h3>
             <span class="email-link">Email</span>
             <a href="mailto:{{ selectedContact.email }}">{{ selectedContact.email }}</a>
             <span>Phone</span>
             <a href="tel:{{ selectedContact.phone }}">{{ selectedContact.phone }}</a>
-          </div>  
+          </div>
         </div>
       </div>
     }
@@ -96,18 +101,18 @@
       <app-contact-overlay></app-contact-overlay>
     </div>
   </ng-template>
+  @if (canCreateContact) {
   <div class="mobile-btn-add-contact">
       <button (click)="addNewContact()">
-    <img src="/icons-white/person_add.svg" alt="check" />
+    <img src="/img/icons-white/person_add.svg" alt="check" />
   </button>
   </div>
-
+  }
   @if (showDeleteConfirm) {
   <div class="delete-confirm-overlay">
     <div class="delete-dialog">
-      <h3>Delete contact?</h3>
       <p>Do you realy want to delete this contact?</p>
-      <div class="button-group">
+      <div class="button-group justify-space-between">
         <button class="btn cancel" (click)="cancelDelete()">cancel</button>
         <button class="btn delete" (click)="confirmDelete()">delete</button>
       </div>

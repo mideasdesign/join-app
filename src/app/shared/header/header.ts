@@ -1,7 +1,7 @@
-import {Component} from '@angular/core';
+import {Component, HostListener} from '@angular/core';
 import {CommonModule} from '@angular/common';
 import {FormsModule} from '@angular/forms';
-import {Router} from '@angular/router';
+import {Router, RouterModule} from '@angular/router';
 import {LoginService} from '../../login/login.service';
 import {AuthService} from '../firebase/firebase-services/auth.service';
 import {Login} from '../../login/login';
@@ -9,21 +9,56 @@ import {BreakpointObserverService} from './breakpoint.observer';
 import {SignUpService} from '../../sign-up/sign-up.service';
 import {SignUp} from '../../sign-up/sign-up';
 
+/**
+ * Header component that provides navigation, user authentication, and responsive behavior.
+ * Includes login/signup forms, user dropdown menu, and mobile-responsive functionality.
+ * 
+ * @example
+ * ```html
+ * <app-header></app-header>
+ * ```
+ */
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, FormsModule, Login, SignUp],
+  imports: [CommonModule, FormsModule, RouterModule, Login, SignUp],
   templateUrl: './header.html',
   styleUrl: './header.scss'
 })
 export class Header {
+  /** User email for login form */
   email = '';
+  
+  /** User password for login form */
   password = '';
+  
+  /** Error message for failed authentication attempts */
   errorMessage = '';
+  
+  /** Flag to show/hide login form */
   showLogin = false;
+  
+  /** Flag to show/hide signup form */
   showSignUp = false;
+  
+  /** Flag to show/hide user dropdown menu */
+  showDropdown = false;
+  
+  /** Current authenticated user object */
   user: any;
+  
+  /** Timeout reference for dropdown auto-hide functionality */
+  private dropdownTimeout: any;
 
+  /**
+   * Creates an instance of Header component.
+   * Sets up authentication state monitoring and service subscriptions.
+   * @param loginService - Service for handling login operations
+   * @param authService - Service for authentication state management
+   * @param signUpService - Service for handling user registration
+   * @param breakpointObserver - Service for responsive breakpoint detection
+   * @param router - Angular router for navigation
+   */
   constructor(
     private loginService: LoginService,
     private authService: AuthService,
@@ -33,11 +68,6 @@ export class Header {
   ) {
     this.authService.user$.subscribe(u => this.user = u);
     this.signUpService.showSignUp$.subscribe(v => this.showSignUp = v);
-  }
-
-  /** Navigates to the help page. */
-  navigateToHelp() {
-    this.router.navigate(['/help']);
   }
 
   /**
@@ -69,8 +99,56 @@ export class Header {
     this.showLogin = true;
   }
 
+  /** Shows the dropdown menu */
+  showDropdownMenu() {
+    // Clear any pending timeout
+    if (this.dropdownTimeout) {
+      clearTimeout(this.dropdownTimeout);
+      this.dropdownTimeout = null;
+    }
+    this.showDropdown = true;
+  }
+
+  /** Hides the dropdown menu with a small delay */
+  hideDropdownMenu() {
+    // Add a small delay to allow moving between circle and dropdown
+    this.dropdownTimeout = setTimeout(() => {
+      this.showDropdown = false;
+    }, 220); // 150ms delay
+  }
+
+  /** Toggles the dropdown menu */
+  toggleDropdown() {
+    this.showDropdown = !this.showDropdown;
+  }
+
+  /** Closes the dropdown menu */
+  closeDropdown() {
+    this.showDropdown = false;
+  }
+
   /** Logs out the current user. */
   logout() {
-    this.authService.logout();
+    this.authService.logout()
+      .then(() => {
+        this.showDropdown = false; // Close dropdown after logout
+        this.router.navigate([''], { queryParams: { fromLogout: 'true' } });
+      });
+  }
+
+  /** Close dropdown when clicking outside */
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: Event) {
+    const target = event.target as HTMLElement;
+    const isInsideDropdown = target.closest('.circle-user') || target.closest('.dropdown-menu');
+
+    if (!isInsideDropdown) {
+      // Clear timeout and close immediately on click outside
+      if (this.dropdownTimeout) {
+        clearTimeout(this.dropdownTimeout);
+        this.dropdownTimeout = null;
+      }
+      this.showDropdown = false;
+    }
   }
 }

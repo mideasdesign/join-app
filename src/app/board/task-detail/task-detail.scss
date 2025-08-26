@@ -1,5 +1,4 @@
 @use 'index' as *;
-
 .task-container {
   width: 100%;
   height: 100%;
@@ -32,8 +31,9 @@
 
 .task-detail-title{
     font-size: var(--font-size-2xl);
+    max-height: 420px;
+    overflow-y: auto;
 }
-
 
 .task-detail-card{
     max-width: 550px;
@@ -53,7 +53,6 @@ h5{
 
 .assigned-to{
     align-items: center;
-    margin-bottom: $spacing-base;
 }
 
 .ckeckbox-subtask{
@@ -87,20 +86,16 @@ h5{
   align-items: center;
   z-index: 10000;
 }
-
-.delete-dialog {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  min-width: 300px;
-  text-align: center;
+.assigned-to-container{
+  max-height:150px;
+  overflow-y: auto;
 }
 
 .button-group {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
 
 .btn {
@@ -145,7 +140,6 @@ h5{
   position: relative; 
   box-sizing: border-box; 
   padding: 0 10px;
-  gap:$spacing-xs;
   border: 1px solid transparent;
   border-radius: 0;
   height: 30px;
@@ -156,14 +150,17 @@ h5{
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none; 
-  width: 20px;
-  height: 20px;
-  background: url('/icons/checkbox.svg') no-repeat; 
+  width: 22px;
+  height: 22px;
+  background: url('https://join-5-1183.developerakademie.net/angular-projects/join/icons/checkbox.svg') no-repeat; 
   background-size: 20px;
   border: 1px solid transparent;
   margin: 0;
   cursor: pointer;
   flex-shrink: 0;
+}
+.iconsbefore:hover h4{
+  color:$color-subtask-bar;
 }
 
 .custom-checkbox:focus{
@@ -171,22 +168,18 @@ h5{
 }
 
 .custom-checkbox:checked {
-  background: url('/icons/box-checked.svg') no-repeat;
+  background: url('https://join-5-1183.developerakademie.net/angular-projects/join/icons/box-checked.svg') no-repeat;
   background-size: 20px;
 }
 
 .label-for-checkbox{
-  margin-left:$spacing-sm;
   cursor: pointer;
   font-size: var(--font-size-base);
   color: $color-text-primary;
 }
-
-// Contact initials styling for task detail
-.circle-initial {
-  margin-right: $spacing-sm;
+.custom-checkbox > input{
+  padding:0;
 }
-
 .circle-user {
   width: 42px;
   height: 42px;
@@ -217,25 +210,25 @@ h5{
 .no-subtasks {
   color: $color-text-secondary;
   font-style: italic;
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-base);
   padding: $spacing-sm 0;
 }
 
 // Category styling with dynamic colors
 .category {
   padding: 4px 12px;
-  border-radius: 4px;
-  font-size: var(--font-size-sm);
+  border-radius: $spacing-sm;
+  font-size: var(--font-size-base);
   font-weight: 500;
   color: $color-white;
   display: inline-block;
 }
 
-.category-userstory {
+.category-user-story {
   background-color: $color-badge-userstory;
 }
 
-.category-technical {
+.category-technical-task {
   background-color: $color-badge-technical;
 }
 
@@ -260,4 +253,106 @@ h5{
   width: 20px;
   height: 20px;
   object-fit: contain;
+}
+
+// Subtask progress bar styling
+.subtask-progress-section {
+  margin: $spacing-sm 0;
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: #e0e0e0;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: $spacing-xs;
+}
+
+.progress-bar {
+  height: 100%;
+  background-color: $color-subtask-bar;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: var(--font-size-base);
+  color: $color-text-secondary;
+  text-align: center;
+}
+
+// Subtask hover actions styling
+.subtask-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-xs $spacing-sm;
+  border-radius: 4px;
+  transition: background-color 0.2s ease;
+  position: relative;
+  
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+    
+    .subtask-actions {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+}
+
+.subtask-container{
+  margin:$spacing-base 0;
+}
+
+.subtask-content {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.subtask-actions {
+  display: flex;
+  gap: $spacing-xs;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  margin-left: $spacing-sm;
+}
+
+.action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  svg {
+    width: 16px;
+    height: 16px;
+    transition: all 0.2s ease;
+  }
+  
+  &.edit-icon {
+    color: $color-primary;
+    
+    &:hover {
+
+      color: $color-subtask-bar;
+      transform: scale(1.1);
+    }
+  }
+  
+  &.delete-icon {
+    color: $color-primary;
+    
+    &:hover {
+      color: $color-subtask-bar;
+      transform: scale(1.1);
+    }
+  }
 }

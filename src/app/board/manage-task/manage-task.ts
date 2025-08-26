@@ -1,55 +1,132 @@
 import { Component, inject, OnInit, OnDestroy} from '@angular/core';
-import { CdkDropList, CdkDrag, DragDropModule, CdkDragDrop, CdkDragPlaceholder, moveItemInArray, transferArrayItem,} from '@angular/cdk/drag-drop';
 import { Observable } from 'rxjs';
-import { Firebase } from '../../Shared/firebase/firebase-services/firebase-services';
 import { CommonModule } from '@angular/common';
-import {MatProgressBarModule} from '@angular/material/progress-bar';
-import { TaskService } from '../../Shared/firebase/firebase-services/task-service';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { FormsModule } from '@angular/forms';
+import { DragDropModule, CdkDragDrop } from '@angular/cdk/drag-drop';
+
+import { Firebase } from '../../Shared/firebase/firebase-services/firebase-services';
+import { TaskService } from '../../Shared/firebase/firebase-services/task-service';
 import { TaskInterface } from '../../interfaces/task-interface';
 import { TaskDetail } from '../task-detail/task-detail';
 import { TaskFilterService } from './task-filter';
-import { TaskOverlayService } from '../../Shared/firebase/firebase-services/add-task-overlay.service';
-import { AddTask } from '../add-task/add-task';
+import { TaskOverlayService } from '../../Shared/firebase/firebase-services/task-overlay.service';
+import { UserPermissionService } from '../../Shared/services/user-permission.service';
+import { SuccessServices } from '../../Shared/firebase/firebase-services/success-services';
+import { ActivatedRoute, Router } from '@angular/router';
 
+// New Services
+import { TaskColumnService } from './services/task-column-manager.service';
+import { TaskUIHelperService } from './services/task-ui.service';
+import { TaskHighlightService } from './services/task-highlight.service';
+import { MobileSliderService } from './services/mobile-slider.service';
+import { TaskDragDropService } from './services/task-dragdrop.service';
+
+/**
+ * Main component for managing the task board with columns and drag & drop functionality
+ */
 @Component({
   selector: 'app-manage-task',
   standalone: true,
-  imports: [CommonModule, DragDropModule, MatProgressBarModule, CdkDragPlaceholder, FormsModule, TaskDetail],
+  imports: [CommonModule, MatProgressBarModule, FormsModule, TaskDetail, DragDropModule],
   templateUrl: './manage-task.html',
   styleUrl: './manage-task.scss',
 })
 export class ManageTask implements OnInit, OnDestroy {
+  
+  // Injected Services
   public TaskService = inject(TaskService);
+  public firebase = inject(Firebase);
   private filterService = inject(TaskFilterService);
   private taskOverlayService = inject(TaskOverlayService);
+  private userPermissionService = inject(UserPermissionService);
+  private success = inject(SuccessServices);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
+  
+  // New Services
+  private columnService = inject(TaskColumnService);
+  private uiHelper = inject(TaskUIHelperService);
+  private highlightService = inject(TaskHighlightService);
+  public mobileSlider = inject(MobileSliderService);
+  private dragDropService = inject(TaskDragDropService);
+
+  // Component State
   tasks$!: Observable<TaskInterface[]>;
-  firebase = inject(Firebase);
-  isEdited = false;
-  isSelected = false;
-  taskId?: string ='';
   tasks: TaskInterface[] = [];
   searchTerm: string = '';
   filteredColumns: any[] = [];
+  noTasksFound: boolean = false;
+  columns: any[] = [];
+  
+  // UI State
+  isEdited = false;
+  isSelected = false;
+  taskId?: string = '';
+  selectedTask?: TaskInterface;
+  selectedTasksIndex?: number;
+  isDragging = false; // Diese Zeile hinzufügen
+  
+  // Permissions
+  canCreateTask = false;
+  canEditTask = false;
+  canDeleteTask = false;
+  
+  // Drag & Drop
+  dropListIds: string[] = [];
+  
+  // Event Listeners
   private editOverlayListener?: (event: any) => void;
+  private paramsSubscribed = false;
 
-
-  columns = [
-    { title: 'To Do', id: 'todoList', tasks: [] as TaskInterface[] },
-    { title: 'In Progress', id: 'progressList', tasks: [] as TaskInterface[] },
-    { title: 'Await Feedback', id: 'feedbackList', tasks: [] as TaskInterface[] },
-    { title: 'Done', id: 'doneList', tasks: [] as TaskInterface[] }
-  ];
-
+  /**
+   * Component initialization
+   */
   ngOnInit() {
+    this.initializeTasks();
+    this.initializePermissions();
+    this.initializeEventListeners();
+    this.initializeDragDrop();
+  }
+
+  /**
+   * Component cleanup
+   */
+  ngOnDestroy() {
+    this.cleanup();
+  }
+
+  /**
+   * Initializes task data subscription
+   */
+  private initializeTasks() {
     this.tasks$ = this.TaskService.getTasks();
     this.tasks$.subscribe(tasks => {
       this.tasks = tasks;
       this.updateColumns();
       this.filteredColumns = [...this.columns];
+      this.checkForHighlightParameter();
+    });
+  }
+
+  /**
+   * Initializes user permissions
+   */
+  private initializePermissions() {
+    this.userPermissionService.canCreate().subscribe(canCreate => {
+      this.canCreateTask = canCreate;
+      this.canEditTask = canCreate;
     });
 
-    // Event-Listener für Edit-Overlay
+    this.userPermissionService.canDelete().subscribe(canDelete => {
+      this.canDeleteTask = canDelete;
+    });
+  }
+
+  /**
+   * Initializes event listeners
+   */
+  private initializeEventListeners() {
     this.editOverlayListener = (event: any) => {
       this.selectedTask = event.detail.task;
       this.editTask(event.detail.task);
@@ -57,19 +134,29 @@ export class ManageTask implements OnInit, OnDestroy {
     document.addEventListener('openEditOverlay', this.editOverlayListener);
   }
 
-  ngOnDestroy() {
-    if (this.editOverlayListener) {
-      document.removeEventListener('openEditOverlay', this.editOverlayListener);
-    }
+  /**
+   * Initializes drag and drop functionality
+   */
+  private initializeDragDrop() {
+    this.dropListIds = [
+      'todoList-list', 'progressList-list', 'feedbackList-list', 'doneList-list',
+      'todoList-mobile-list', 'progressList-mobile-list', 'feedbackList-mobile-list', 'doneList-mobile-list'
+    ];
   }
 
+  /**
+   * Updates columns with current tasks
+   */
   updateColumns() {
-    this.columns[0].tasks = this.tasks.filter(t => t.status === 'todo');
-    this.columns[1].tasks = this.tasks.filter(t => t.status === 'inProgress');
-    this.columns[2].tasks = this.tasks.filter(t => t.status === 'feedback');
-    this.columns[3].tasks = this.tasks.filter(t => t.status === 'done');
+    this.columns = this.columnService.updateColumns(this.tasks);
+    this.mobileSlider.resetPositions();
+    this.applyCurrentFilter();
+  }
 
-    // Apply current filter to updated columns
+  /**
+   * Applies current search filter
+   */
+  private applyCurrentFilter() {
     if (this.searchTerm && this.searchTerm.trim() !== '') {
       this.applyFilter(this.searchTerm);
     } else {
@@ -77,51 +164,28 @@ export class ManageTask implements OnInit, OnDestroy {
     }
   }
 
-  get connectedDropLists(): string[] {
-    return this.columns.map(col => col.id);
+  /**
+   * Checks for highlight parameters in URL
+   */
+  checkForHighlightParameter() {
+    if (this.paramsSubscribed) return;
+    this.paramsSubscribed = true;
+
+    this.route.queryParams.subscribe(params => {
+      this.highlightService.handleHighlightParams(params, this.tasks, this.router);
+    });
   }
 
-  drop(event: CdkDragDrop<TaskInterface[]>) {
-    if (event.previousContainer === event.container) {
-      moveItemInArray(
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-    } else {
-      transferArrayItem(
-        event.previousContainer.data,
-        event.container.data,
-        event.previousIndex,
-        event.currentIndex
-      );
-
-      const task = event.container.data[event.currentIndex];
-      if (task && task.id) {
-        let newStatus: 'todo' | 'inProgress' | 'feedback' | 'done';
-
-        switch (event.container.id) {
-          case 'todoList':
-            newStatus = 'todo';
-            break;
-          case 'progressList':
-            newStatus = 'inProgress';
-            break;
-          case 'feedbackList':
-            newStatus = 'feedback';
-            break;
-          case 'doneList':
-            newStatus = 'done';
-            break;
-          default:
-            return;
-        }
-
-        task.status = newStatus;
-        this.firebase.editTaskToDatabase(task.id, task);
-      }
+  /**
+   * Cleanup method for component destruction
+   */
+  private cleanup() {
+    if (this.editOverlayListener) {
+      document.removeEventListener('openEditOverlay', this.editOverlayListener);
     }
   }
+
+  // Task Actions
   selectTask(task: TaskInterface) {
     if (!task) return;
     this.isSelected = true;
@@ -134,118 +198,119 @@ export class ManageTask implements OnInit, OnDestroy {
     this.selectedTask = undefined;
   }
 
-    addNewTask() {
-      this.taskOverlayService.openOverlay(); // kein Parameter = "Add Mode"
-    };
+  addNewTask() {
+    if (!this.canCreateTask) {
+      this.success.show('You do not have permission to create tasks', 3000);
+      return;
+    }
+    this.taskOverlayService.openOverlay();
+  }
 
-    editTask(tasks: TaskInterface) {
-        this.taskOverlayService.openOverlay(tasks); // übergibt Task als `taskToEdit`
-      };
-      deleteItem(taskId: string) {
-        this.firebase.deleteTaskFromDatabase(taskId);
-      }
+  editTask(task: TaskInterface) {
+    if (!this.canEditTask) {
+      this.success.show('You do not have permission to edit tasks', 3000);
+      return;
+    }
+    this.taskOverlayService.openOverlay(task);
+  }
 
-  selectedTasksIndex?: number;
-  selectedTask?: TaskInterface;
+  deleteItem(taskId: string) {
+    if (!this.canDeleteTask) {
+      this.success.show('You do not have permission to delete tasks', 3000);
+      return;
+    }
+    this.firebase.deleteTaskFromDatabase(taskId);
+  }
 
-  /**
-   * Generiert Initialen aus einem Namen
-   * @param name - Der vollständige Name
-   * @returns Die Initialen
-   */
+  // Filter Methods
+  applyFilter(searchTerm: string) {
+    this.searchTerm = searchTerm;
+    if (!searchTerm || searchTerm.trim() === '') {
+      this.filteredColumns = [...this.columns];
+      this.noTasksFound = false;
+      return;
+    }
+
+    this.filteredColumns = this.filterService.filterColumns([...this.columns], searchTerm);
+    this.noTasksFound = !this.filteredColumns.some(column => column.tasks.length > 0);
+  }
+
+  // Helper Methods (delegated to services)
   getInitials(name: string): string {
     return this.TaskService.getInitials(name);
   }
 
-  /**
-   * Generiert eine konsistente Farbe für einen Namen
-   * @param name - Der Name des Mitarbeiters
-   * @returns Eine Hex-Farbe
-   */
   getColor(name: string): string {
     return this.TaskService.getColor(name);
   }
 
-  /**
-   * Findet den Namen eines Kontakts anhand der ID
-   * @param contactId - Die ID des Kontakts
-   * @returns Der Name des Kontakts oder leerer String
-   */
   getContactName(contactId: string): string {
     const contact = this.firebase.ContactsList.find(c => c.id === contactId);
     return contact ? contact.name : '';
   }
 
-  /**
-   * Berechnet den Fortschritt der Subtasks als Prozent
-   * @param task - Das Task-Objekt
-   * @returns Prozentfortschritt (0-100)
-   */
-  getSubtaskProgress(task: TaskInterface): number {
-    if (!task.subtasks || task.subtasks.length === 0) {
-      return 100;
-    }
-    const completed = task.subtasks.filter(subtask => subtask.done).length;
-    return Math.round((completed / task.subtasks.length) * 100);
-  }
-
-  /**
-   * Zählt die abgeschlossenen Subtasks
-   * @param task - Das Task-Objekt
-   * @returns Anzahl der abgeschlossenen Subtasks
-   */
-  getCompletedSubtasks(task: TaskInterface): number {
-    if (!task.subtasks || task.subtasks.length === 0) {
-      return 0;
-    }
-    return task.subtasks.filter(subtask => subtask.done).length;
-  }
-
-  /**
-   * Bestimmt die CSS-Klasse für eine Kategorie
-   * @param category - Die Kategorie der Task
-   * @returns Die entsprechende CSS-Klasse
-   */
+  // UI Helper Methods (delegated to UIHelper Service)
   getCategoryClass(category: string): string {
-    switch (category.toLowerCase()) {
-      case 'user story':
-        return 'category-userstory';
-      case 'technical task':
-        return 'category-technical';
-      default:
-        return 'category-default';
-    }
+    return this.uiHelper.getCategoryClass(category);
   }
 
-  /**
-   * Bestimmt das Icon-Pfad für eine Priorität
-   * @param priority - Die Priorität der Task (Low, Medium, High)
-   * @returns Der Pfad zum entsprechenden Icon
-   */
+  truncateText(text: string): string {
+    return this.uiHelper.truncateText(text);
+  }
+
+  limitArray(array: any[]): any[] {
+    return this.uiHelper.limitArray(array);
+  }
+
   getPriorityIcon(priority: string): string {
-    switch (priority.toLowerCase()) {
-      case 'low':
-        return '/icons/prio-low.svg';
-      case 'medium':
-        return '/icons/prio-medium.svg';
-      case 'urgent':
-        return '/icons/prio-urgent.svg';
-      default:
-        return '/icons/prio-medium.svg'; // Fallback
-    }
+    return this.uiHelper.getPriorityIcon(priority);
   }
 
-  /**
-   * Applies filter to columns based on search term
-   * @param searchTerm The search term to filter by
-   */
-  applyFilter(searchTerm: string) {
-    this.searchTerm = searchTerm;
-    if (!searchTerm || searchTerm.trim() === '') {
-      this.filteredColumns = [...this.columns];
-      return;
-    }
+  getSubtaskProgress(task: TaskInterface): number {
+    return this.uiHelper.getSubtaskProgress(task);
+  }
 
-    this.filteredColumns = this.filterService.filterColumns([...this.columns], searchTerm);
+  getCompletedSubtasks(task: TaskInterface): number {
+    return this.uiHelper.getCompletedSubtasks(task);
+  }
+
+  // Mobile Slider Methods (delegated)
+  getCurrentTaskIndex(columnId: string): number {
+    return this.mobileSlider.getCurrentTaskIndex(columnId);
+  }
+
+  getCurrentVisibleTaskIndex(columnId: string): number {
+    return this.mobileSlider.getCurrentTaskIndex(columnId);
+  }
+
+  scrollToTask(columnId: string, index: number): void {
+    this.mobileSlider.scrollToTask(columnId, index, this.filteredColumns);
+  }
+
+  showTaskAtIndex(columnId: string, index: number): void {
+    this.mobileSlider.showTaskAtIndex(columnId, index, this.filteredColumns);
+  }
+
+  onTouchStart(event: TouchEvent): void {
+    this.mobileSlider.onTouchStart(event);
+  }
+
+  onTouchEnd(event: TouchEvent, columnId: string): void {
+    this.mobileSlider.onTouchEnd(event, columnId, this.filteredColumns);
+  }
+
+  // Drag & Drop (delegated)
+  onDrop(event: CdkDragDrop<TaskInterface[]>, targetColumnId: string): void {
+    this.dragDropService.handleDrop(
+      event, 
+      targetColumnId, 
+      this.canEditTask, 
+      this.searchTerm,
+      this.tasks,
+      this.success,
+      this.firebase,
+      () => this.updateColumns(),
+      () => this.applyFilter(this.searchTerm)
+    );
   }
 }

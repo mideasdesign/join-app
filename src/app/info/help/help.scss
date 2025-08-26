@@ -1,9 +1,10 @@
-@use '../../../styles/variables' as *;
-@use '../../../styles/mixins' as *;
-@use '../../../styles/typography' as *;
+@use 'variables' as *;
+@use 'mixins' as *;
+@use 'typography' as *;
 
 .help-container {
-  max-width: 800px;
+  position: relative;
+  max-width: 90svw;
   margin: 0 0 0 2rem;
   padding: 2rem;
   color: $color-text-heading;
@@ -11,6 +12,8 @@
   @media (max-width: $breakpoint-md) {
     padding: 1.5rem;
     margin: 0 0 0 1.5rem;
+    height:calc(100svh - 146px);
+    overflow:auto;
   }
 
   @media (max-width: $breakpoint-sm) {
@@ -101,6 +104,12 @@
   h3 {
     color: $color-subtask-bar;
   }
+}
+
+.close-sign {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: $color-primary;
 }
 
 .help-footer {

@@ -1,9 +1,9 @@
-@use '../../../styles/variables' as *;
-@use '../../../styles/mixins' as *;
-@use '../../../styles/typography' as *;
+@use 'variables' as *;
+@use 'mixins' as *;
+@use 'typography' as *;
 
 .imprint-container {
-  max-width: 800px;
+  max-width: 90svw;
   margin: 0 0 0 2rem;
   padding: 2rem;
   color: $color-text-heading;
@@ -11,6 +11,8 @@
   @media (max-width: $breakpoint-md) {
     padding: 1.5rem;
     margin: 0 0 0 1.5rem;
+    height:calc(100svh - 146px);
+    overflow:auto;
   }
 
   @media (max-width: $breakpoint-sm) {
@@ -22,7 +24,6 @@
     font-size: var(--font-size-3xl);
     margin-bottom: 2rem;
     color: $color-primary;
-
     @media (max-width: $breakpoint-md) {
       margin-bottom: 1.5rem;
     }
@@ -33,7 +34,7 @@
     margin-top: 2.5rem;
     margin-bottom: 1rem;
     color: $color-primary;
-    font-weight: $font-weight-semi;
+
 
     @media (max-width: $breakpoint-md) {
       margin-top: 2rem;
@@ -46,7 +47,7 @@
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
     color: $color-primary;
-    font-weight: $font-weight-semi;
+
 
     @media (max-width: $breakpoint-md) {
       margin-top: 1.25rem;
@@ -66,7 +67,6 @@
 
 .imprint-section {
   margin-bottom: 3rem;
-
   @media (max-width: $breakpoint-md) {
     margin-bottom: 2rem;
   }
@@ -102,7 +102,6 @@
   }
 
   p:last-child {
-    font-weight: $font-weight-semi;
     margin-top: 1.5rem;
   }
 }

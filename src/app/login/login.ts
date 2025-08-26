@@ -5,7 +5,12 @@ import {LoginService} from './login.service';
 import {AuthService} from '../Shared/firebase/firebase-services/auth.service';
 import {RouterModule, Router} from '@angular/router';
 import {LogoAnimation} from './logo-animation';
+import {ActivatedRoute} from '@angular/router';
 
+/**
+ * Login component for user authentication
+ * Handles user login with email/password and guest login functionality
+ */
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -24,7 +29,8 @@ export class Login implements OnInit {
     private loginService: LoginService,
     private authService: AuthService,
     private logoAnimation: LogoAnimation,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   /** Logs in the user with email and password. */
@@ -79,13 +85,42 @@ export class Login implements OnInit {
 
   /** Initializes login animation after page load. */
   ngOnInit(): void {
-    const triggerAnimation = () => {
-      this.isLoading = false;
-      setTimeout(() => {
-        this.logoAnimation.initAnimation(() => this.showLoginCard = true);
-      }, 100);
-    };
-    window.addEventListener('load', () => setTimeout(triggerAnimation, 500));
-    setTimeout(triggerAnimation, 5000);
+    // Check if user is coming from logout, internal navigation, or if animation already played
+    this.route.queryParams.subscribe(params => {
+      const skipAnimation = params['fromLogout'] === 'true' || 
+                           params['skipAnimation'] === 'true' ||
+                           LogoAnimation.hasPlayed ||
+                           this.isInternalNavigation();
+      
+      if (skipAnimation) {
+        // Skip animation and show login card immediately
+        this.isLoading = false;
+        this.showLoginCard = true;
+        // Mark animation as played to prevent it from running later
+        LogoAnimation.hasPlayed = true;
+      } else {
+        // Normal animation flow for regular page load
+        const triggerAnimation = () => {
+          this.isLoading = false;
+          setTimeout(() => {
+            this.logoAnimation.initAnimation(() => this.showLoginCard = true);
+          }, 100);
+        };
+        window.addEventListener('load', () => setTimeout(triggerAnimation, 500));
+        setTimeout(triggerAnimation, 5000);
+      }
+    });
+  }
+
+  /**
+   * Checks if this is an internal navigation (not a fresh page load)
+   */
+  private isInternalNavigation(): boolean {
+    // Check if we have a referrer from the same origin
+    const referrer = document.referrer;
+    const currentOrigin = window.location.origin;
+    
+    // If there's a referrer from the same domain, it's likely internal navigation
+    return !!(referrer && referrer.startsWith(currentOrigin));
   }
 }

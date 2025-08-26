@@ -1,11 +1,14 @@
+@use 'sass:color';
 @use 'index' as *;
 .login-container{
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column;
 }
 .login-content{
-    max-width: 652px;
+    width: 90svw;
+    max-width: 490px;
 }
 .single-wrapper{
   display: flex;
@@ -13,13 +16,13 @@
   height:100dvh;
 }
 header{
-    max-height: 65px;
+    max-height: 150px;
     display: flex;
     justify-content: space-between;
     width: 100dvw;
     padding:$spacing-3xl;
     & img{
-        max-height: 50px;
+        max-height: 121px;
     }
 }
 .header-content{
@@ -29,25 +32,14 @@ header{
     align-items: center;
     gap: $spacing-base;
 }
-/* main{
+ main{
     display: flex;
     justify-content: center;
     align-items: center;
     height:calc(100svh - 130px);
-} */
+} 
 footer{
     height:65px;
-}
-.big-card{
-    max-width:652px;
-    padding:$spacing-5xl;
-    justify-content: center;
-    display: flex;
-    flex-direction:column;
-    justify-content: center;
-    & h1{
-        text-align: center;
-    }
 }
 .subline {
   position: relative;
@@ -57,8 +49,8 @@ footer{
     content: "";
     position: absolute;
     bottom: -8px; // Abstand zur Schrift
-    left: 43%;
-    width: 15%;
+    left: 19%;
+    width: 66%;
     border-bottom: 3px solid $color-subtask-bar;
   }
 }
@@ -70,6 +62,7 @@ footer{
     flex-direction: column;
     gap: $spacing-xs;
     justify-content: center;
+    width:100%;
 }
 .footer-content{
     display: flex;
@@ -82,9 +75,7 @@ footer{
         }
     }
 }
-.margin-bottom{
-    margin-bottom: $spacing-2xl;
-}
+
 .justify-center{
     justify-content: center;
 }
@@ -92,15 +83,6 @@ footer{
 .invalid-input {
     border: 2px solid #ff3d00 !important;
     background-color: rgba(255, 61, 0, 0.05);
-}
-
-.validation-message {
-    color: #ff3d00;
-    font-size: 12px;
-    margin-top: -5px;
-    margin-bottom: 5px;
-    padding-left: 10px;
-    min-height: 18px;
 }
 
 .error {
@@ -112,6 +94,7 @@ footer{
 .checkbox-group {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: $spacing-xs;
     margin: $spacing-xs 0;
 
@@ -132,7 +115,7 @@ footer{
             text-decoration: underline;
 
             &:hover {
-                color: darken($color-primary, 10%);
+                color: color.adjust($color-primary, $lightness: -10%);
             }
         }
     }
@@ -148,4 +131,31 @@ footer{
     button:not([disabled]) {
         opacity: 1;
     }
+}
+.login-card{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction:column;
+  padding:$spacing-2xl $spacing-4xl;
+}
+.signup-mobile, .signup-desktop{
+  justify-content: center;
+  align-items: center;
+  gap: $spacing-base;
+  margin-top: $spacing-base;
+}
+  .signup-mobile{
+    display:none;
+  }
+    .signup-desktop{
+    display:flex;
+  }
+@media (width < 520px){
+  .signup-mobile{
+    display:flex;
+  }
+    .signup-desktop{
+    display:none;
+  }
 }

@@ -1,14 +1,13 @@
 @use 'index' as *;
-
-
 .overlay-container {
       display: flex;
-      max-width: 100svw;
+      max-width: 960px;
       background: transparent;
-     border-radius: 10px;
       overflow: hidden;
       @media (width < 769px){
       max-height:90svh;
+      width:79svw;
+      overflow: auto;
       }
     }
 
@@ -37,13 +36,21 @@
     border-bottom: 3px solid $color-subtask-bar;
   }
 }
+.update-edit{
+  width:100%;
+  margin-left:4%;
+  @media(width < 900px){
+    margin-left:0;
+  }
+}
 .card-wrapper {
   flex-direction: row;
   position: relative;
   @include center;
-  width: 60svw;
+  width: 85svw;
   max-width: 1220px;
-  height:45svh;
+  height:35rem;
+  min-height:455px;
 @media(width < 769px){
   flex-direction: column;
   height:100%;
@@ -73,15 +80,12 @@
 }
 .left-content {
   display: flex;
-  justify-content: center;
   flex-direction: column;
   flex-wrap: wrap;
   gap: $spacing-md;
   height:100%;
-  padding:3rem 0;
-  @media(width < 769px){
-    padding:0 2rem;
-  }
+  padding:1rem;
+  margin-top
   .underline {
     position: relative;
     bottom: 3px;
@@ -91,6 +95,7 @@
 
     &.mobile {
       margin-top: 10px;
+
     }
   }
   .logo-White {
@@ -104,7 +109,7 @@
     &.mobile {
       display: none;
        }
-  }; 
+  };
   h2 {
     color: $color-white;
     font-size: var(--font-size-2xl);
@@ -127,7 +132,75 @@
   width:100%;
 }
 
+  .input-group {
+    position: relative;
+    margin-bottom: 0.5rem;
+    border: 1px $color-light-gray solid;
+    border-radius: $spacing-xs;
+     padding:3px;
+
+    &.invalid-field {
+      border-color: $color-accent-urgent;
+      background-color: transparent;
+    }
+
+    &.error {
+      input {
+        border-color: red;
+      }
+    }
+
+    .error-input {
+      border-color: red !important;
+    }
+
+    input {
+      padding-right: 0px; /* Add padding to make room for the icon on the right */
+      border:0px transparent solid;
+      width: 200px;
+    }
+
+    img {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 20px;
+      height: 20px;
+    }
+
+    .speech-bubble {
+      position: absolute;
+      color: white;
+      font-size: 0.8rem;
+      background-color: red;
+      padding: 10px 15px;
+      border-radius: 8px;
+      z-index: 10;
+      top: -5px;
+      left: 10px;
+      transform: translateY(-100%);
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      white-space: nowrap;
+
+      &::after {
+        content: "";
+        position: absolute;
+        bottom: -8px;
+        left: 15px;
+        border-width: 8px 8px 0;
+        border-style: solid;
+        border-color: red transparent transparent transparent;
+      }
+    }
+  }
+
   .right-content {
+
+    // Ensure inputs do not get red background inside contacts overlay
+    input.invalid-field {
+      background-color: transparent !important;
+    }
   position: relative;
   display: flex;
   flex-direction: row;
@@ -139,45 +212,72 @@
       left: 0;
     }
     .contact-form {
-      @include center-row-not-justify;
+      display: flex;
+     flex-direction: row;
+      justify-content: center;
+      align-items: center;
       flex:1;
+      gap:2rem;
       padding: 2rem;
-      @media (width < 769px){
+      @media (width < 980px){
         flex-direction: column;
       }
       .contact-avatar {
-        position:absolute;
-        left:38%;
-        top:-10%;
-        z-index:100;
-        @include center;
-        width: 80px;
-        height: 80px;
-        background-color: $color-light-gray;
-        border-radius: 50%;
-        img {
-          min-width: 30px;
-          min-height: 30px;
-          width: 58%;
-          height: 58%;
-        }
-        @media (width > 770px){
-          position:relative;
-          left: 0;
-          top: 0;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          width: 120px;
-          height: 120px;
-          z-index:1;
-          margin-right: 3rem;
-
+        width:50%;
+        display: grid;
+        justify-content: center;
+        align-items: center;
+        @media (width < 769px){
+          height:40px;
         }
       }
-      form {
-        @include center-column;
-        flex:1;
+      .avatar-content{
+        display: grid;
+        position:relative;
+        width:95px;
+        height:95px;
+        background:$color-medium-gray;
+        border-radius: 50%;
+        justify-content: center;
+        align-items: center;
+        & img{
+          width:40px;
+          height: 40px;
+          position: relative;
+        }
+      @media (width < 769px){
+        postition:absolute;
+        top:-70px;
+        left:0;
+        z-index:800;
+        height:75px;
+        width:75px;
+        img{
+          width:40px;
+          height: 40px;
+          margin-bottom:4px;
+        }
+        }
+      }
+    }
+  }
+}
+
+/* Button styling for disabled state */
+.button-group {
+  .btn {
+    &.disabled, &[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background-color: #ccc;
+      color: #666;
+
+      &:hover {
+        background-color: #ccc;
+      }
+
+      .check {
+        opacity: 0.5;
       }
     }
   }
