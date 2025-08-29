@@ -26,31 +26,11 @@
             "assets": [
               {
                 "glob": "**/*",
-                "input": "public/icons",
-                "output": "icons"
-              },
-              {
-                "glob": "**/*",
-                "input": "public/icons-white",
-                "output": "icons-white"
-              },
-              {
-                "glob": "**/*",
-                "input": "public/font",
-                "output": "/font"
-              },
-              {
-                "glob": "**/*",
-                "input": "public/img",
-                "output": "img"
-              },
-              {
-                "glob": "*",
-                "input": "public",
-                "output": "/"
+                "input": "public"
               }
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.scss"
             ],
             "stylePreprocessorOptions": {
@@ -59,22 +39,21 @@
           },
           "configurations": {
             "production": {
-              "baseHref": "/",
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.prod.ts"
                 }
-              ],"budgets": [
+                ],"budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "3MB",
-                  "maximumError": "2.5MB"
+                  "maximumWarning": "500kB",
+                  "maximumError": "1.5MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "600kB",
-                  "maximumError": "599kB"
+                  "maximumWarning": "8kB",
+                  "maximumError": "12kB"
                 }
               ],
               "outputHashing": "all"
@@ -118,9 +97,10 @@
               }
             ],
             "styles": [
+              "@angular/material/prebuilt-themes/azure-blue.css",
               "src/styles.scss"
             ],
-            "stylePreprocessorOptions": {
+              "stylePreprocessorOptions": {
               "includePaths": ["src/styles"]
             }
           }
