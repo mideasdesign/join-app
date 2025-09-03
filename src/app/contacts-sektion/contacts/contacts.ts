@@ -28,43 +28,82 @@ export class Contacts implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private userPermissionService = inject(UserPermissionService);
   private success = inject(SuccessServices);
+  
+  /** Firebase service instance */
   firebase = inject(Firebase);
+  
+  /** Breakpoint observer for responsive design */
   breakpointHandler = inject(BreakpointObserverHandler);
 
-  // Permission flags
+  /** Permission flag for contact creation */
   canCreateContact = false;
+  
+  /** Permission flag for contact editing */
   canEditContact = false;
+  
+  /** Permission flag for contact deletion */
   canDeleteContact = false;
 
-  // Flag to track whether details are being shown in mobile view
+  /** Flag to show mobile detail view */
   showMobileDetails = false;
 
+  /**
+   * Constructor for Contacts component
+   */
   constructor() {}
 
+  /** Observable of contacts data */
   contacts$!: Observable<ContactsInterface[]>;
+  
+  /** Contacts grouped by first letter */
   groupedContacts: { [letter: string]: ContactsInterface[] } = {};
+  
+  /** Email of currently logged in user */
   currentUserEmail: string | null = null;
 
+  /** Flag indicating if contact is being edited */
   isEdited = false;
+  
+  /** Flag indicating if contact is selected */
   public isSelected = false;
+  
+  /** Index of selected contact */
   selectedContactsIndex: number | null = null;
+  
+  /** ID of selected contact */
   contactsId?: string = '';
 
+  /** Flag to show delete confirmation dialog */
   showDeleteConfirm = false;
+  
+  /** ID of contact pending deletion */
   pendingDeleteId: string | null = null;
+  
+  /** Flag to track if overlay was opened for user */
   private overlayOpenedForUser = false;
+  
+  /** Subscription to contacts observable */
   private contactsSubscription?: Subscription;
+  
+  /** Subscription to auth observable */
   private authSubscription?: Subscription;
 
+  /** Edited contact data */
   editedContacts = { name: '', email: '', phone: '', isLoggedInUser: false };
+  
+  /** Currently selected contact */
   selectedContact: ContactsInterface = { id: '', name: '', email: '', phone: '', isLoggedInUser: false };
 
+  /** Event listener for closing overlay */
   private closeOverlayListener = () => {
     this.overlayService.close();
     this.overlayOpenedForUser = false;
   };
 
-  /** Opens overlay to add new contact */
+  /** 
+   * Opens overlay to add new contact
+   * Checks user permissions before allowing contact creation
+   */
   addNewContact() {
     if (!this.canCreateContact) {
       this.success.show('You do not have permission to create contacts', 3000);
@@ -73,7 +112,10 @@ export class Contacts implements OnInit, OnDestroy {
     this.overlayService.openOverlay();
   }
 
-  /** Opens overlay to edit a specific contact */
+  /** 
+   * Opens overlay to edit a specific contact
+   * @param contact - Contact to be edited
+   */
   editContact(contact: ContactsInterface) {
     if (!this.canEditContact) {
       this.success.show('You do not have permission to edit contacts', 3000);
@@ -84,7 +126,10 @@ export class Contacts implements OnInit, OnDestroy {
     this.overlayService.openOverlay(contactToEdit);
   }
 
-  /** Deletes contact by ID */
+  /** 
+   * Deletes contact by ID
+   * @param contactId - ID of contact to delete
+   */
   deleteItem(contactId: string) {
     if (!this.canDeleteContact) {
       this.success.show('You do not have permission to delete contacts', 3000);
@@ -93,7 +138,11 @@ export class Contacts implements OnInit, OnDestroy {
     this.firebase.deleteContactsFromDatabase(contactId);
   }
 
-  /** Selects a contact from grouped contacts */
+  /** 
+   * Selects a contact from grouped contacts
+   * @param letter - First letter group of the contact
+   * @param index - Index of contact within the letter group
+   */
   selectedContacts(letter: string, index: number) {
     const contact = this.groupedContacts[letter][index];
     if (!contact) return;
@@ -103,19 +152,19 @@ export class Contacts implements OnInit, OnDestroy {
     const isCurrentUser = this.currentUserEmail ? contact.email === this.currentUserEmail : false;
     this.selectedContact = { ...contact, phone: contact.phone ?? '', isLoggedInUser: isCurrentUser };
 
-    // Show details in mobile view
     if (this.breakpointHandler.isMobile()) {
       this.showMobileDetails = true;
     }
   }
 
-  /** Returns to the contact list in mobile view */
+  /** 
+   * Returns to the contact list in mobile view
+   * Includes slide-out animation for smooth transition
+   */
   goBackToList() {
-    // Add slide-out animation before hiding details
     const detailContainer = document.querySelector('.contacts-detail-container');
     if (detailContainer) {
       detailContainer.classList.add('slide-out');
-      // Wait for animation to complete before hiding
       setTimeout(() => {
         this.showMobileDetails = false;
         detailContainer.classList.remove('slide-out');
@@ -125,7 +174,9 @@ export class Contacts implements OnInit, OnDestroy {
     }
   }
 
-  /** Saves the edited contact to database */
+  /** 
+   * Saves the edited contact to database
+   */
   saveEdit() {
     if (this.contactsId) {
       this.firebase.editContactsToDatabase(this.contactsId, this.editedContacts);
@@ -133,7 +184,9 @@ export class Contacts implements OnInit, OnDestroy {
     this.cancelEdit();
   }
 
-  /** Cancels edit mode */
+  /** 
+   * Cancels edit mode and resets edit state
+   */
   cancelEdit() {
     this.isEdited = false;
     this.selectedContactsIndex = null;
@@ -141,7 +194,10 @@ export class Contacts implements OnInit, OnDestroy {
     this.editedContacts = { name: '', email: '', phone: '', isLoggedInUser: false };
   }
 
-  /** Prompts delete confirmation */
+  /** 
+   * Prompts delete confirmation dialog
+   * @param contactId - ID of contact to delete
+   */
   promptDelete(contactId: string) {
     if (!this.canDeleteContact) {
       this.success.show('You do not have permission to delete contacts', 3000);
@@ -151,16 +207,17 @@ export class Contacts implements OnInit, OnDestroy {
     this.showDeleteConfirm = true;
   }
 
-  /** Confirms and deletes the selected contact */
+  /** 
+   * Confirms and deletes the selected contact
+   * Also handles cleanup of selected contact state
+   */
   confirmDelete() {
     if (this.pendingDeleteId) {
       this.deleteItem(this.pendingDeleteId);
-      // Reset detail view if the deleted contact was selected
       if (this.pendingDeleteId === this.contactsId) {
         this.selectedContactsIndex = null;
         this.selectedContact = { id: '', name: '', email: '', phone: '', isLoggedInUser: false };
         this.contactsId = '';
-        // Reset mobile view state
         if (this.breakpointHandler.isMobile()) {
           this.showMobileDetails = false;
         }
@@ -170,12 +227,18 @@ export class Contacts implements OnInit, OnDestroy {
     this.pendingDeleteId = null;
   }
 
-  /** Cancels delete confirmation */
+  /** 
+   * Cancels delete confirmation dialog
+   */
   cancelDelete() {
     this.showDeleteConfirm = false;
     this.pendingDeleteId = null;
   }
 
+  /**
+   * Component initialization lifecycle hook
+   * Sets up subscriptions for contacts, auth, and permissions
+   */
   ngOnInit(): void {
     this.contacts$ = this.firebase.getAlphabeticalContacts();
     this.authSubscription = this.authService.user$.subscribe(user => {
@@ -186,10 +249,9 @@ export class Contacts implements OnInit, OnDestroy {
     });
     document.addEventListener('closeOverlay', this.closeOverlayListener);
 
-    // Initialize permission flags
     this.userPermissionService.canCreate().subscribe(canCreate => {
       this.canCreateContact = canCreate;
-      this.canEditContact = canCreate; // Use same permission for edit as create
+      this.canEditContact = canCreate; 
     });
 
     this.userPermissionService.canDelete().subscribe(canDelete => {
@@ -197,7 +259,9 @@ export class Contacts implements OnInit, OnDestroy {
     });
   }
 
-  /** Updates grouped contacts and marks the logged-in user */
+  /** 
+   * Updates grouped contacts and marks the logged-in user
+   */
   updateContacts(): void {
     this.contactsSubscription?.unsubscribe();
     this.contactsSubscription = this.contacts$.subscribe(contacts => {
@@ -209,7 +273,11 @@ export class Contacts implements OnInit, OnDestroy {
     });
   }
 
-  /** Groups contacts by their first name's first letter and sorts alphabetically within each group */
+  /** 
+   * Groups contacts by their first name's first letter and sorts alphabetically within each group
+   * @param contacts - Array of contacts to group
+   * @returns Object with letters as keys and contact arrays as values
+   */
   private groupContactsByFirstLetter(contacts: ContactsInterface[]): { [letter: string]: ContactsInterface[] } {
     const grouped: { [letter: string]: ContactsInterface[] } = {};
     for (const contact of contacts) {
@@ -218,7 +286,6 @@ export class Contacts implements OnInit, OnDestroy {
       grouped[letter].push(contact);
     }
 
-    // Sort contacts within each letter group alphabetically
     for (const letter in grouped) {
       grouped[letter].sort((a, b) => a.name.localeCompare(b.name));
     }
@@ -226,23 +293,35 @@ export class Contacts implements OnInit, OnDestroy {
     return grouped;
   }
 
-  /** Returns sorted keys of grouped contacts */
+  /** 
+   * Returns sorted keys of grouped contacts
+   * @returns Array of sorted alphabetical keys
+   */
   get groupedKeys(): string[] {
     return Object.keys(this.groupedContacts).sort();
   }
 
-  /** Returns initials from full name */
+  /** 
+   * Returns initials from full name
+   * @param name - Full name of the contact
+   * @returns Initials as string
+   */
   getInitials(name: string): string {
     return this.taskService.getInitials(name);
   }
 
-  /** Generates consistent color for name */
+  /** 
+   * Generates consistent color for name
+   * @param name - Name of the contact
+   * @returns Hex color string
+   */
   getColor(name: string): string {
     return this.taskService.getColor(name);
   }
 
   /**
    * Checks if user is in contacts. If not, adds them and opens overlay if phone is missing
+   * @param email - Email of the user to check
    */
   checkUserInContacts(email: string | null): void {
     if (!email || this.overlayOpenedForUser) return;
@@ -266,7 +345,10 @@ export class Contacts implements OnInit, OnDestroy {
     });
   }
 
-  /** Opens overlay for contact and sets validation flag */
+  /** 
+   * Opens overlay for contact and sets validation flag
+   * @param contact - Contact to open overlay for
+   */
   openContactOverlay(contact: ContactsInterface): void {
     this.overlayService.openOverlay(contact);
     setTimeout(() => {
@@ -278,7 +360,9 @@ export class Contacts implements OnInit, OnDestroy {
     }, 100);
   }
 
-  /** Cleans up subscriptions and event listeners on destroy */
+  /** 
+   * Cleans up subscriptions and event listeners on destroy
+   */
   ngOnDestroy(): void {
     this.authSubscription?.unsubscribe();
     this.contactsSubscription?.unsubscribe();

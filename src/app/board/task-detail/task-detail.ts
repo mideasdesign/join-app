@@ -9,7 +9,15 @@ import { SuccessServices } from '../../Shared/firebase/firebase-services/success
 import { ContactsInterface } from '../../interfaces/contacts-interface';
 import { UserPermissionService } from '../../Shared/services/user-permission.service';
 
-
+/**
+ * Component for displaying detailed task information
+ * Shows task details, allows editing, deletion and subtask management
+ * 
+ * @example
+ * ```html
+ * <app-task-detail [selectedTask]="task" (close)="onClose()"></app-task-detail>
+ * ```
+ */
 @Component({
   selector: 'app-task-detail',
  imports: [CommonModule, ReactiveFormsModule],
@@ -21,18 +29,37 @@ export class TaskDetail implements OnInit {
   private taskService = inject(TaskService);
   private firebase = inject(Firebase);
   private userPermissionService = inject(UserPermissionService);
+  
+  /** List of all contacts */
   public ContactsList: ContactsInterface[] = [];
+  
+  /** Currently selected task to display */
   @Input() selectedTask!: TaskInterface;
+  
+  /** Event emitter for closing the detail view */
   @Output() close = new EventEmitter<void>();
+  
+  /** Permission flag for task deletion */
   canDeleteTask = false;
+  
+  /** Permission flag for task editing */
   canEditTask = false;
 
+  /**
+   * Constructor for TaskDetail component
+   */
   constructor() {}
 
+  /**
+   * Component initialization lifecycle hook
+   */
   ngOnInit() {
     this.initializeData();
   }
 
+  /**
+   * Initializes component data by subscribing to contacts and permissions
+   */
   private initializeData() {
     this.taskService.getContactsRef().subscribe((contacts: ContactsInterface[]) => {
       this.ContactsList = contacts;
@@ -47,31 +74,42 @@ export class TaskDetail implements OnInit {
     });
   }
 
+  /**
+   * Cancels task detail view and closes overlay
+   */
   cancel() {
     document.dispatchEvent(new CustomEvent('closeOverlay'));
   }
 
+  /**
+   * Opens edit overlay for the selected task
+   * @param task - Task to be edited
+   */
   editTasks(task: TaskInterface | null) {
     if (!task) return;
 
-    // Check if user has permission to edit tasks
     if (!this.canEditTask) {
       this.success.show('You do not have permission to edit tasks', 3000);
       return;
     }
 
-    // Event für Edit-Overlay senden
     document.dispatchEvent(new CustomEvent('openEditOverlay', {
       detail: { task: task }
     }));
 
-    // Task-Detail-Overlay schließen
     this.close.emit();
   }
 
+    /** Flag to show/hide delete confirmation dialog */
     showDeleteConfirm = false;
+    
+    /** ID of task pending deletion */
     pendingDeleteId: string | null = null;
 
+    /**
+     * Shows delete confirmation dialog for a task
+     * @param taskId - ID of task to be deleted
+     */
     promptDelete(taskId: string) {
       if (!this.canDeleteTask) {
         this.success.show('You do not have permission to delete tasks', 3000);
@@ -81,11 +119,18 @@ export class TaskDetail implements OnInit {
       this.showDeleteConfirm = true;
     }
 
+    /**
+     * Cancels delete operation and hides confirmation dialog
+     */
     cancelDelete() {
       this.showDeleteConfirm = false;
       this.pendingDeleteId = null;
     }
-        confirmDelete() {
+    
+    /**
+     * Confirms and executes task deletion
+     */
+    confirmDelete() {
       if (this.pendingDeleteId) {
         this.deleteItem(this.pendingDeleteId);
       }
@@ -93,6 +138,10 @@ export class TaskDetail implements OnInit {
       this.pendingDeleteId = null;
     }
 
+    /**
+     * Deletes a task from the database
+     * @param taskId - ID of task to delete
+     */
     deleteItem(taskId: string) {
       if (!this.canDeleteTask) {
         this.success.show('You do not have permission to delete tasks', 3000);
@@ -102,7 +151,10 @@ export class TaskDetail implements OnInit {
       this.close.emit();
     }
 
-
+  /**
+   * Deletes a task asynchronously with error handling
+   * @param taskId - ID of task to delete
+   */
   async deleteTask(taskId: string) {
     if (!this.canDeleteTask) {
       this.success.show('You do not have permission to delete tasks', 3000);
@@ -111,42 +163,43 @@ export class TaskDetail implements OnInit {
 
     try {
       await this.taskService.deleteTaskFromDatabase(taskId);
-      // Task erfolgreich gelöscht - Overlay schließen
       this.close.emit();
-      // Optional: Erfolgs-Nachricht anzeigen
-      // Task successfully deleted
     } catch (error) {
-      // Error handling already managed by try-catch
-      alert('Fehler beim Löschen der Aufgabe. Bitte versuchen Sie es erneut.');
+      alert('Error deleting task. Please try again.');
     }
   }
 
+  /**
+   * Track by function for ngFor optimization
+   * @param index - Index of the item
+   * @returns Index for tracking
+   */
   trackByIndex(index: number) {
     return index;
   }
 
   /**
-   * Generiert Initialen aus einem Namen
-   * @param name - Der vollständige Name
-   * @returns Die Initialen
+   * Generates initials from a name.
+   * @param name - The full name
+   * @returns The initials
    */
   getInitials(name: string): string {
     return this.taskService.getInitials(name);
   }
 
   /**
-   * Generiert eine konsistente Farbe für einen Namen
-   * @param name - Der Name des Mitarbeiters
-   * @returns Eine Hex-Farbe
+   * Generates a consistent color for a name.
+   * @param name - The employee's name
+   * @returns A hex color code
    */
   getColor(name: string): string {
     return this.taskService.getColor(name);
   }
 
   /**
-   * Findet den Namen eines Kontakts anhand der ID
-   * @param contactId - Die ID des Kontakts
-   * @returns Der Name des Kontakts oder leerer String
+   * Finds the name of a contact by ID.
+   * @param contactId - The contact's ID
+   * @returns The contact's name or empty string
    */
   getContactName(contactId: string): string {
     const contact = this.ContactsList.find(c => c.id === contactId);
@@ -154,18 +207,18 @@ export class TaskDetail implements OnInit {
   }
 
   /**
-   * Bestimmt die CSS-Klasse für eine Kategorie
-   * @param category - Die Kategorie der Task
-   * @returns Die entsprechende CSS-Klasse
+   * Determines the CSS class for a category.
+   * @param category - The task category
+   * @returns The corresponding CSS class
    */
   getCategoryClass(category: string): string {
     return `category-${category.toLowerCase().replace(/\s+/g, '-')}`;
   }
 
   /**
-   * Bestimmt das Icon-Pfad für eine Priorität
-   * @param priority - Die Priorität der Task (Low, Medium, High)
-   * @returns Der Pfad zum entsprechenden Icon
+   * Determines the icon path for a priority.
+   * @param priority - The task priority (Low, Medium, High)
+   * @returns The path to the corresponding icon
    */
   getPriorityIcon(priority: string): string {
     switch (priority) {
@@ -176,23 +229,21 @@ export class TaskDetail implements OnInit {
       case 'Urgent':
         return 'icons/prio-urgent.svg';
       default:
-        return 'icons/prio-medium.svg'; // Fallback
+        return 'icons/prio-medium.svg'; 
     }
   }
 
   /**
-   * Schaltet den Status eines Subtasks um und aktualisiert die Datenbank
-   * @param subtaskIndex - Der Index des Subtasks im Array
+   * Toggles the status of a subtask and updates the database.
+   * @param subtaskIndex - The subtask index in the array
    */
   async toggleSubtask(subtaskIndex: number) {
     if (!this.selectedTask.subtasks || subtaskIndex < 0 || subtaskIndex >= this.selectedTask.subtasks.length) {
       return;
     }
 
-    // Sicherstellen, dass der Subtask ein Objekt ist
     let subtask = this.selectedTask.subtasks[subtaskIndex];
 
-    // Wenn der Subtask ein String ist, in ein Objekt umwandeln
     if (typeof subtask === 'string') {
       subtask = {
         title: subtask,
@@ -201,24 +252,18 @@ export class TaskDetail implements OnInit {
       this.selectedTask.subtasks[subtaskIndex] = subtask;
     }
 
-    // Status des Subtasks umschalten
     subtask.done = !subtask.done;
 
     try {
-      // Task in der Datenbank aktualisieren
-      // Note: We allow guests to toggle subtasks as it's a form of "clicking" mentioned in requirements
       await this.firebase.editTaskToDatabase(this.selectedTask.id!, this.selectedTask);
-      // Subtask status updated successfully
     } catch (error) {
-      // Bei Fehler den Status zurücksetzen
       subtask.done = !subtask.done;
-      // Error handling already managed by try-catch
     }
   }
 
   /**
-   * Berechnet den Fortschritt der Subtasks in Prozent
-   * @returns Fortschritt zwischen 0 und 100
+   * Calculates the progress of subtasks in percentage.
+   * @returns Progress between 0 and 100
    */
   getSubtaskProgress(): number {
     if (!this.selectedTask.subtasks || this.selectedTask.subtasks.length === 0) {
@@ -226,9 +271,8 @@ export class TaskDetail implements OnInit {
     }
 
     const completedSubtasks = this.selectedTask.subtasks.filter(subtask => {
-      // Handle both string and object formats
       if (typeof subtask === 'string') {
-        return false; // Strings are considered not done
+        return false; 
       }
       return subtask.done;
     }).length;
@@ -237,16 +281,15 @@ export class TaskDetail implements OnInit {
   }
 
   /**
-   * Gibt die Anzahl der erledigten Subtasks zurück
-   * @returns Anzahl der erledigten Subtasks
+   * Returns the number of completed subtasks.
+   * @returns Number of completed subtasks
    */
   getCompletedSubtasks(): number {
     if (!this.selectedTask.subtasks) return 0;
 
     return this.selectedTask.subtasks.filter(subtask => {
-      // Handle both string and object formats
       if (typeof subtask === 'string') {
-        return false; // Strings are considered not done
+        return false; 
       }
       return subtask.done;
     }).length;

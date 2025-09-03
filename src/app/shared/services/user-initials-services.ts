@@ -1,28 +1,35 @@
 import { Injectable } from '@angular/core';
 
 /**
- * Service for generating user initials and color assignments
- * Provides consistent color assignment and initial generation for user names
+ * Service for generating user initials and color assignments.
+ * Provides consistent color assignment and initial generation for user names.
+ * 
+ * @example
+ * ```typescript
+ * constructor(private userInitials: UserInitialsServices) {
+ *   const display = this.userInitials.getUserDisplay('John Doe', 'john@example.com');
+ *   console.log(display.initials); // 'JD'
+ *   console.log(display.color); // '#EF4444'
+ * }
+ * ```
  */
 @Injectable({
   providedIn: 'root'
 })
 export class UserInitialsServices {
   
+  /** Array of predefined colors for user avatar backgrounds */
   private readonly colors = [
-    // Original Farben (17)
     '#EF4444', '#F97316', '#F59E0B', '#EAB308',
     '#84CC16', '#22C55E', '#10B981', '#14B8A6',
     '#06B6D4', '#0EA5E9', '#3B82F6', '#6366F1',
     '#8B5CF6', '#A855F7', '#D946EF', '#EC4899',
     '#F43F5E',
-    // Zusätzliche Farben (20)
     '#DC2626', '#EA580C', '#D97706', '#CA8A04',
     '#65A30D', '#16A34A', '#059669', '#0D9488',
     '#0891B2', '#0284C7', '#2563EB', '#4F46E5',
     '#7C3AED', '#9333EA', '#C026D3', '#DB2777',
     '#E11D48', '#BE123C', '#991B1B', '#92400E',
-    // Weitere 20 Farben (Duplikate entfernt und ersetzt)
     '#F472B6', '#FB7185', '#FBBF24', '#FCD34D',
     '#A3E635', '#4ADE80', '#34D399', '#2DD4BF',
     '#38BDF8', '#60A5FA', '#818CF8', '#A78BFA',
@@ -30,8 +37,10 @@ export class UserInitialsServices {
     '#15803D', '#166534', '#0F766E', '#155E75'
   ];
 
-  // Lookup-Table für bereits zugewiesene Farben
+  /** Map to store persistent color assignments for users based on name/email */
   private readonly colorAssignments = new Map<string, string>();
+  
+  /** Index counter for cycling through available colors */
   private colorIndex = 0;
 
   /**
@@ -52,11 +61,9 @@ export class UserInitialsServices {
     }
     
     if (nameParts.length === 1) {
-      // Bei nur einem Namen: erste 2 Buchstaben
       return nameParts[0].substring(0, 2).toUpperCase();
     }
     
-    // Bei mehreren Namen: erster Buchstabe des ersten und letzten Namens
     return (nameParts[0].charAt(0) + nameParts[nameParts.length - 1].charAt(0)).toUpperCase();
   }
 
@@ -68,18 +75,15 @@ export class UserInitialsServices {
    */
   getColor(name: string, email?: string): string {
     if (!name || name.trim() === '') {
-      return '#6B7280'; // Standard-Grau
+      return '#6B7280'; 
     }
     
-    // Verwende E-Mail als primären Identifier, fallback auf Name
     const identifier = email?.trim().toLowerCase() || name.trim().toLowerCase();
     
-    // Schaue nach bereits zugewiesener Farbe
     if (this.colorAssignments.has(identifier)) {
       return this.colorAssignments.get(identifier)!;
     }
     
-    // Weise die nächste verfügbare Farbe zu
     const color = this.colors[this.colorIndex % this.colors.length];
     this.colorAssignments.set(identifier, color);
     this.colorIndex++;

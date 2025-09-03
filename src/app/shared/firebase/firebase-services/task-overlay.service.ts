@@ -8,13 +8,32 @@ import { ComponentPortal } from '@angular/cdk/portal';
 import { TaskOverlay } from '../../../board/task-overlay/task-overlay';
 import { TaskInterface } from '../../../interfaces/task-interface';
 
+/**
+ * Service for managing CDK overlays for task operations
+ * Provides centralized overlay creation and management for task-related components
+ * 
+ * @example
+ * ```typescript
+ * constructor(private taskOverlayService: TaskOverlayService) {}
+ * 
+ * openTaskEditor() {
+ *   this.taskOverlayService.openOverlay(taskData);
+ * }
+ * ```
+ */
 @Injectable({ providedIn: 'root' })
 export class TaskOverlayService {
+  /** Reference to currently active overlay */
   private overlayRef: OverlayRef | null = null;
+  
+  /** CDK Overlay service for creating overlays */
   private overlay = inject(Overlay);
 
+  /**
+   * Opens an overlay for task editing/creation
+   * @param taskToEdit - Optional task data for editing mode
+   */
   openOverlay(taskToEdit?: TaskInterface) {
-    // Opening overlay with task to edit
     
     const config = new OverlayConfig({
       hasBackdrop: true,
@@ -30,11 +49,8 @@ export class TaskOverlayService {
     const portal = new ComponentPortal(TaskOverlay);
     const componentRef = this.overlayRef.attach(portal);
 
-    // ❗ WICHTIG: Task übergeben, wenn Edit-Modus
     if (taskToEdit) {
-      // Setting task to edit on component instance
       componentRef.instance.taskToEdit = taskToEdit;
-      // Force change detection to ensure the component updates
       componentRef.changeDetectorRef.detectChanges();
     }
 
@@ -42,6 +58,10 @@ export class TaskOverlayService {
     document.addEventListener('closeOverlay', () => this.close(), { once: true });
   }
 
+  /**
+   * Closes the current overlay if open
+   * Disposes of overlay resources and resets reference
+   */
   close() {
     this.overlayRef?.dispose();
     this.overlayRef = null;
