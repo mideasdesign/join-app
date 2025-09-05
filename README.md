@@ -13,13 +13,6 @@
    - Lokaler Entwicklungsserver  
    - Generierung von Komponenten  
    - Build-Prozess  
-4. [Tests](#tests)  
-   - Unit-Tests  
-   - End-to-End-Tests  
-5. [Weitere Ressourcen](#weitere-ressourcen)  
-6. [Projektstruktur](#projektstruktur)  
-7. [Entwicklung & Mitarbeit](#entwicklung--mitarbeit)  
-8. [Lizenz & Hinweise](#lizenz--hinweise)
 
 ---
 
