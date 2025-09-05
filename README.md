@@ -1,59 +1,42 @@
-# Join
+# Join-App
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 20.0.5.
+**Task-Management Software** – generiert mit dem Angular CLI (Version 20.0.5)  
+ [oai_citation:0‡GitHub](https://github.com/mideasdesign/join-app)
 
-## Development server
+---
 
-To start a local development server, run:
+##  Inhaltsverzeichnis
 
-```bash
-ng serve
-```
+1. [Projektbeschreibung](#projektbeschreibung)  
+2. [Voraussetzungen](#voraussetzungen)  
+3. [Einrichtung & Nutzung](#einrichtung--nutzung)  
+   - Lokaler Entwicklungsserver  
+   - Generierung von Komponenten  
+   - Build-Prozess  
+4. [Tests](#tests)  
+   - Unit-Tests  
+   - End-to-End-Tests  
+5. [Weitere Ressourcen](#weitere-ressourcen)  
+6. [Projektstruktur](#projektstruktur)  
+7. [Entwicklung & Mitarbeit](#entwicklung--mitarbeit)  
+8. [Lizenz & Hinweise](#lizenz--hinweise)
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
+## Projektbeschreibung
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+„Join-App“ ist eine **Task-Management-Anwendung**, entwickelt mit dem Angular Framework. Sie dient als Startpunkt für das Verwalten von Aufgaben in einer modernen, komponentenbasierten Architektur.  
+ [oai_citation:1‡GitHub](https://github.com/mideasdesign/join-app)
 
-```bash
-ng generate component component-name
-```
+---
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Voraussetzungen
 
-```bash
-ng generate --help
-```
+Stelle sicher, dass du folgende Tools installiert hast:
 
-## Building
-
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+- [Node.js](https://nodejs.org/) (Version 18 oder höher empfohlen)  
+- [npm](https://npmjs.com/) (wird typischerweise mit Node.js installiert)  
+- Angular CLI (Version ≥ 20.0.5):
 
 ```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+npm install -g @angular/cli@20.0.5
