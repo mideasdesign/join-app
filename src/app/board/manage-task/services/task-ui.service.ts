@@ -41,11 +41,11 @@ export class TaskUIHelperService {
    */
   getPriorityIcon(priority: string): string {
     const iconMap: { [key: string]: string } = {
-      'low': 'icons/prio-low.svg',
-      'medium': 'icons/prio-medium.svg',
-      'urgent': 'icons/prio-urgent.svg'
+      'low': 'img/icons/prio-low.svg',
+      'medium': 'img/icons/prio-medium.svg',
+      'urgent': 'img/icons/prio-urgent.svg'
     };
-    return iconMap[priority.toLowerCase()] || 'icons/prio-medium.svg';
+    return iconMap[priority.toLowerCase()] || 'img/icons/prio-medium.svg';
   }
 
   /**
